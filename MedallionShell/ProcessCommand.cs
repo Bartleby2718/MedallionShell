@@ -15,7 +15,7 @@ namespace Medallion.Shell
 {
     internal sealed class ProcessCommand : Command
     {
-        private readonly bool disposeOnExit;
+        private readonly bool disposeOnExit, preserveStandardOutput;
         /// <summary>
         /// Used for <see cref="ToString"/>
         /// </summary>
@@ -27,26 +27,33 @@ namespace Medallion.Shell
             bool disposeOnExit,
             TimeSpan timeout,
             CancellationToken cancellationToken,
-            Encoding? standardInputEncoding)
+            Encoding? standardInputEncoding,
+            bool preserveStandardOutput)
         {
             this.disposeOnExit = disposeOnExit;
             this.fileName = startInfo.FileName;
             this.arguments = startInfo.Arguments;
             this.process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+            this.preserveStandardOutput = preserveStandardOutput;
 
             var processMonitoringTask = CreateProcessMonitoringTask(this.process);
 
             this.process.SafeStart(out var processStandardInput, out var processStandardOutput, out var processStandardError);
 
-            var ioTasks = new List<Task>(capacity: 2);
+            var ioTasks = new List<Task>(capacity: this.preserveStandardOutput ? 3 : 2);
             if (processStandardOutput != null)
             {
-                this.standardOutputReader = new InternalProcessStreamReader(processStandardOutput);
+                this.preservedStandardOutputReader = new InternalProcessStreamReader(processStandardOutput, this.preserveStandardOutput);
+                ioTasks.Add(this.preservedStandardOutputReader.Task);
+            }
+            if (processStandardOutput != null)
+            {
+                this.standardOutputReader = new InternalProcessStreamReader(processStandardOutput, this.preserveStandardOutput);
                 ioTasks.Add(this.standardOutputReader.Task);
             }
             if (processStandardError != null)
             {
-                this.standardErrorReader = new InternalProcessStreamReader(processStandardError);
+                this.standardErrorReader = new InternalProcessStreamReader(processStandardError, this.preserveStandardOutput);
                 ioTasks.Add(this.standardErrorReader.Task);
             }
             if (processStandardInput != null)
@@ -137,6 +144,9 @@ namespace Medallion.Shell
 
         private readonly ProcessStreamWriter? standardInput;
         public override ProcessStreamWriter StandardInput => this.standardInput ?? throw new InvalidOperationException("Standard input is not redirected");
+
+        private readonly InternalProcessStreamReader? preservedStandardOutputReader;
+        public override ProcessStreamReader PreservedStandardOutput => this.preservedStandardOutputReader ?? throw new InvalidOperationException("Standard output is not redirected");
 
         private readonly InternalProcessStreamReader? standardOutputReader;
         public override ProcessStreamReader StandardOutput => this.standardOutputReader ?? throw new InvalidOperationException("Standard output is not redirected");

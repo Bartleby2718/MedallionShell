@@ -86,14 +86,18 @@ namespace Medallion.Shell.Streams
         /// Pipes the output of the underlying stream to the given stream. This occurs asynchronously, so this
         /// method returns before all content has been written
         /// </summary>
-        public Task PipeToAsync(Stream stream, bool leaveReaderOpen = false, bool leaveStreamOpen = false)
+        public Task PipeToAsync(Stream stream, bool leaveReaderOpen = false, bool leaveStreamOpen = false, bool keepBaseStream = true) // TODO: RENAME keep
         {
             Throw.IfNull(stream, "stream");
+
+            var extraDisposeActionWhenStreamShouldStayOpen = keepBaseStream
+                ? () => stream.Seek(0, SeekOrigin.Begin)
+                : default(Action?);
 
             return this.PipeAsync(
                 () => this.BaseStream.CopyToAsync(stream),
                 leaveOpen: leaveReaderOpen,
-                extraDisposeAction: leaveStreamOpen ? default(Action) : () => stream.Dispose()
+                extraDisposeAction: leaveStreamOpen ? extraDisposeActionWhenStreamShouldStayOpen : () => stream.Dispose()
             );
         }
 
@@ -101,11 +105,19 @@ namespace Medallion.Shell.Streams
         /// Pipes the output of the reader to the given writer. This occurs asynchronously, so this
         /// method returns before all content has been written
         /// </summary>
-        public Task PipeToAsync(TextWriter writer, bool leaveReaderOpen = false, bool leaveWriterOpen = false)
+        public Task PipeToAsync(TextWriter writer, bool leaveReaderOpen = false, bool leaveWriterOpen = false, bool seek = false)
         {
             Throw.IfNull(writer, "writer");
 
-            return this.CopyToAsync(writer, leaveReaderOpen: leaveReaderOpen, leaveWriterOpen: leaveWriterOpen);
+            var task = this.CopyToAsync(writer, leaveReaderOpen: leaveReaderOpen, leaveWriterOpen: leaveWriterOpen);
+            if (seek)
+            {
+                task = task.ContinueWith(task =>
+                {
+                    this.BaseStream.Seek(0, SeekOrigin.Begin);
+                });
+            }
+            return task;
         }
 
         /// <summary>

@@ -62,14 +62,15 @@ namespace Medallion.Shell
                 disposeOnExit: finalOptions.DisposeProcessOnExit,
                 timeout: finalOptions.ProcessTimeout,
                 cancellationToken: finalOptions.ProcessCancellationToken,
-                standardInputEncoding: finalOptions.ProcessStreamEncoding
+                standardInputEncoding: finalOptions.ProcessStreamEncoding,
+                preserveStandardOutput: finalOptions.RetainStandardOutput
             );
             foreach (var initializer in finalOptions.CommandInitializers)
             {
                 command = initializer(command);
                 if (command == null) { throw new InvalidOperationException($"{nameof(Command)} initializer passed to {nameof(Options)}.{nameof(Options.Command)} must not return null!"); }
             }
-            
+
             return command;
         }
 
@@ -177,6 +178,7 @@ namespace Medallion.Shell
             internal TimeSpan ProcessTimeout { get; private set; }
             internal Encoding? ProcessStreamEncoding { get; private set; }
             internal CancellationToken ProcessCancellationToken { get; private set; }
+            internal bool RetainStandardOutput { get; private set; }
 
             #region ---- Builder methods ----
             /// <summary>
@@ -192,6 +194,7 @@ namespace Medallion.Shell
                 this.ProcessTimeout = System.Threading.Timeout.InfiniteTimeSpan;
                 this.ProcessStreamEncoding = null;
                 this.ProcessCancellationToken = System.Threading.CancellationToken.None;
+                this.RetainStandardOutput = false;
                 return this;
             }
 
@@ -215,7 +218,7 @@ namespace Medallion.Shell
             {
                 Throw.IfNull(initializer, nameof(initializer));
 
-                this.Command(c => 
+                this.Command(c =>
                 {
                     initializer(c);
                     return c;
@@ -340,6 +343,19 @@ namespace Medallion.Shell
             public Options CancellationToken(CancellationToken cancellationToken)
             {
                 this.ProcessCancellationToken = cancellationToken;
+                return this;
+            }
+
+            /// <summary>
+            /// If specified, a <see cref="Medallion.Shell.Command"/>'s <see cref="Command.StandardOutput"/> will be retained
+            /// even when it was followed by <see cref="o:Medallion.Shell.Command.RedirectTo(Stream)"/>.
+            /// This allows for a behavior that's similar to https://en.wikipedia.org/wiki/Tee_(command)
+            /// 
+            /// Defaults to false
+            /// </summary>
+            public Options PreserveStandardOutput(bool value = true)
+            {
+                this.RetainStandardOutput = value;
                 return this;
             }
             #endregion

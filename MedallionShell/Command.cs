@@ -52,6 +52,12 @@ namespace Medallion.Shell
         /// Writes to the process's standard input
         /// </summary>
         public abstract ProcessStreamWriter StandardInput { get; }
+
+        /// <summary>
+        /// TODO:
+        /// </summary>
+        public virtual ProcessStreamReader PreservedStandardOutput => throw new NotImplementedException();
+
         /// <summary>
         /// Reads from the process's standard output
         /// </summary>
@@ -136,7 +142,9 @@ namespace Medallion.Shell
         {
             Throw.IfNull(stream, nameof(stream));
 
-            return new IOCommand(this, this.StandardOutput.PipeToAsync(stream, leaveStreamOpen: true), StandardIOStream.Out, stream);
+            // TODO: leaveReaderOpen should be a variable
+            // TODO: preserveStandardOutput: true
+            return new IOCommand(this, this.StandardOutput.PipeToAsync(stream, leaveReaderOpen: true, leaveStreamOpen: true, keepBaseStream: true), StandardIOStream.Out, stream, preserveStandardOutput: true);
         }
 
         /// <summary>
@@ -280,7 +288,41 @@ namespace Medallion.Shell
         {
             Throw.IfNull(writer, nameof(writer));
 
-            return new IOCommand(this, this.StandardOutput.PipeToAsync(writer, leaveWriterOpen: true), StandardIOStream.Out, writer);
+            // TODO: REVISIT
+            return new IOCommand(this, this.StandardOutput.PipeToAsync(writer, leaveReaderOpen: true, leaveWriterOpen: true, seek: true), StandardIOStream.Out, writer);
+        }
+
+        /// <summary>
+        /// Standard output redirection as in bash. The <see cref="Command"/>'s standard output is written to the given
+        /// <paramref name="writer"/>. Returns a new <see cref="Command"/> whose <see cref="Command.Task"/> tracks the progress
+        /// of both this <see cref="Command"/> and the IO being performed
+        /// </summary>
+        public Command RedirectToWhileTeeing(TextWriter writer)
+        {
+            Throw.IfNull(writer, nameof(writer));
+
+            return new IOCommand(this, this.CopyToWhileTeeingAsync(writer, leaveReaderOpen: true, leaveWriterOpen: true), StandardIOStream.Out, writer);
+        }
+
+        //public string PreservedStandardOutput => this.preservedStandardOutput ?? throw new InvalidOperationException("TODO:");
+        // this.preserveStandardOutput ? new Streams.InternalProcessStreamReader(
+        //new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(this.PreservedStandardOutput.ToString()))))
+
+        internal Task CopyToWhileTeeingAsync(TextWriter writer, bool leaveReaderOpen, bool leaveWriterOpen)
+        {
+            return this.StandardOutput.PipeAsync(
+                async () =>
+                {
+                    var buffer = new char[Constants.CharBufferSize];
+                    int charsRead;
+                    while ((charsRead = await this.StandardOutput.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+                    {
+                        await writer.WriteAsync(buffer, 0, charsRead).ConfigureAwait(false);
+                    }
+                },
+                leaveOpen: leaveReaderOpen,
+                extraDisposeAction: leaveWriterOpen ? default(Action) : () => writer.Dispose()
+            );
         }
 
         /// <summary>
@@ -493,5 +535,20 @@ namespace Medallion.Shell
             Throw<ObjectDisposedException>.If(Volatile.Read(ref this._disposed) != 0, () => this.ToString());
         }
         #endregion
+    }
+
+    internal class TeeTextWriter(TextWriter baseWriter) : TextWriter
+    {
+        private readonly StringBuilder stringBuilder = new();
+
+        public override Encoding Encoding => baseWriter.Encoding;
+
+        public override void Write(char ch)
+        {
+            this.stringBuilder.Append(ch);
+            baseWriter.Write(ch);
+        }
+
+        public override string ToString() => this.stringBuilder.ToString();
     }
 }

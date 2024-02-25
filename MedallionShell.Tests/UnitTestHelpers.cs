@@ -9,7 +9,7 @@ using SampleCommand;
 
 #if !NETCOREAPP2_2
 // don't allow things to hang when running on a CI server
-[assembly: Timeout(60000)]
+//[assembly: Timeout(60000)] // TODO: revert
 #endif
 
 namespace Medallion.Shell.Tests

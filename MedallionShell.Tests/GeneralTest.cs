@@ -185,8 +185,8 @@ namespace Medallion.Shell.Tests
         {
             private readonly List<string> _list = new List<string>();
 
-            private T WithLock<T>(Func<List<string>, T> func) { lock(this._list) { return func(this._list); } }
-            private void WithLock(Action<List<string>> action) { lock(this._list) { action(this._list); } }
+            private T WithLock<T>(Func<List<string>, T> func) { lock (this._list) { return func(this._list); } }
+            private void WithLock(Action<List<string>> action) { lock (this._list) { action(this._list); } }
 
             public int Count => this.WithLock(l => l.Count);
             public bool IsReadOnly => false;
@@ -424,7 +424,7 @@ namespace Medallion.Shell.Tests
             var utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
             command = TestShell.Run(SampleCommand, new[] { "echo", "--utf8" }, options: o => o.Encoding(utf8NoBom)) < InternationalText;
             command.Result.StandardOutput.ShouldEqual(
-                InternationalText, 
+                InternationalText,
                 $"UTF8 encoding should support international chars: Expected bytes [{string.Join(", ", utf8NoBom.GetBytes(InternationalText))}]. Received [{string.Join(", ", utf8NoBom.GetBytes(command.Result.StandardOutput))}]"
             );
 
@@ -592,6 +592,25 @@ namespace Medallion.Shell.Tests
                 command.Task.Wait(TimeSpan.FromSeconds(1000)).ShouldEqual(true);
                 command.Result.Success.ShouldEqual(true);
             }
+        }
+
+        [Test]
+        public void TestPreserveStandardOutput()
+        {
+            using TextWriter stream = new StringWriter();
+            var command = TestShell.Run(
+                SampleCommand,
+                new[] { "echo" },
+                o => o.PreserveStandardOutput())
+                .RedirectFrom(new[] { "input" })
+                .RedirectToWhileTeeing(stream);
+            command.Wait();
+
+            command.PreservedStandardOutput.ReadToEnd().Trim().ShouldEqual("input");
+            //stream.ToString().ShouldEqual("input");
+            // string.Join(string.Empty, stream).ShouldEqual("input");
+            //Encoding.UTF8.GetString(stream.ToArray()).Trim().ShouldEqual("input");
+            //command.StandardOutput.ReadToEnd().ToString().ShouldEqual("input");
         }
 
         private IEnumerable<string> ErrorLines()

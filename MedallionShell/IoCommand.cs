@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,13 +14,15 @@ namespace Medallion.Shell
         private readonly StandardIOStream standardIOStream;
         // for toString
         private readonly object sourceOrSink;
+        private readonly bool preserveStandardOutput;
 
-        public IOCommand(Command command, Task ioTask, StandardIOStream standardIOStream, object sourceOrSink)
+        public IOCommand(Command command, Task ioTask, StandardIOStream standardIOStream, object sourceOrSink, bool preserveStandardOutput = true)
         {
             this.command = command;
             this.task = this.CreateTask(ioTask);
             this.standardIOStream = standardIOStream;
             this.sourceOrSink = sourceOrSink;
+            this.preserveStandardOutput = preserveStandardOutput;
         }
 
         private async Task<CommandResult> CreateTask(Task ioTask)
@@ -65,9 +68,13 @@ namespace Medallion.Shell
             ? this.command.StandardInput
             : throw new InvalidOperationException($"{nameof(this.StandardInput)} is unavailable because it is already being piped from {this.sourceOrSink}");
 
+        // TODO:
+        public override Streams.ProcessStreamReader PreservedStandardOutput => this.command.PreservedStandardOutput;
+
+        // TODO:
         public override Streams.ProcessStreamReader StandardOutput => this.standardIOStream != StandardIOStream.Out
             ? this.command.StandardOutput
-            : throw new InvalidOperationException($"{nameof(this.StandardOutput)} is unavailable because it is already being piped to {this.sourceOrSink}");
+            : throw new InvalidOperationException($"{nameof(this.StandardOutput)} is unavailable because it is already being piped to {this.sourceOrSink} and PreserveStandardOutput was set to false.");
 
         public override Streams.ProcessStreamReader StandardError => this.standardIOStream != StandardIOStream.Error
             ? this.command.StandardError

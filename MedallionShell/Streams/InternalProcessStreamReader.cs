@@ -17,13 +17,15 @@ namespace Medallion.Shell.Streams
         private readonly Pipe pipe;
         private readonly StreamReader reader;
         private volatile bool discardContents;
+        private bool preserveStandardOutput;
 
-        public InternalProcessStreamReader(StreamReader processStreamReader)
+        public InternalProcessStreamReader(StreamReader processStreamReader, bool preserveStandardOutput = false)
         {
             this.processStream = processStreamReader.BaseStream;
             this.pipe = new Pipe();
             this.reader = new StreamReader(this.pipe.OutputStream, processStreamReader.CurrentEncoding);
             this.Task = Task.Run(() => this.BufferLoop());
+            this.preserveStandardOutput = preserveStandardOutput;
         }
 
         public Task Task { get; }
@@ -45,10 +47,10 @@ namespace Medallion.Shell.Streams
             finally
             {
 #if NETSTANDARD1_3
-                this.processStream.Dispose();
+                if (!this.preserveStandardOutput) { this.processStream.Dispose(); }
                 this.pipe.InputStream.Dispose();
 #else
-                this.processStream.Close();
+                if (!this.preserveStandardOutput) { this.processStream.Close(); }
                 this.pipe.InputStream.Close();
 #endif
             }
