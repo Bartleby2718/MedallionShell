@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Medallion.Shell.Streams;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,9 +67,33 @@ namespace Medallion.Shell
             ? this.command.StandardInput
             : throw new InvalidOperationException($"{nameof(this.StandardInput)} is unavailable because it is already being piped from {this.sourceOrSink}");
 
-        public override Streams.ProcessStreamReader StandardOutput => this.standardIOStream != StandardIOStream.Out
-            ? this.command.StandardOutput
-            : throw new InvalidOperationException($"{nameof(this.StandardOutput)} is unavailable because it is already being piped to {this.sourceOrSink}");
+        public override Streams.ProcessStreamReader StandardOutput
+        {
+            get
+            {
+                if (this.standardIOStream != StandardIOStream.Out)
+                {
+                    return this.command.StandardOutput;
+                }
+                if (this.StandardOutput.AdditionalOutput is not { } additionalOutput)
+                {
+                    throw new InvalidOperationException($"{nameof(this.StandardOutput)} is unavailable because it is already being piped to {this.sourceOrSink}");
+                }
+                // Create a MemoryStream to hold the data
+                using var memoryStream = new MemoryStream();
+                // Create a StreamWriter to write to the MemoryStream
+                using var streamWriter = new StreamWriter(memoryStream, additionalOutput.Encoding);
+                streamWriter.WriteLine(additionalOutput.ToString());
+                streamWriter.Flush(); // Ensure all data is written to the MemoryStream
+
+                // Reset the MemoryStream position to the beginning
+                memoryStream.Position = 0;
+
+                // Create a StreamReader to read from the MemoryStream
+                var streamReader = new StreamReader(memoryStream, Encoding.UTF8, true, -1, leaveOpen: true);
+                return new InternalProcessStreamReader(streamReader, additionalOutput: null);
+            }
+        }
 
         public override Streams.ProcessStreamReader StandardError => this.standardIOStream != StandardIOStream.Error
             ? this.command.StandardError

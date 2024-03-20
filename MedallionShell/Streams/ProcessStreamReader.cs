@@ -31,6 +31,11 @@ namespace Medallion.Shell.Streams
         /// </summary>
         public IEnumerable<string> GetLines() => new LinesEnumerable(this);
 
+        /// <summary>
+        /// TODO:
+        /// </summary>
+        public abstract TextWriter? AdditionalOutput { get; }
+        
         private class LinesEnumerable : IEnumerable<string>
         {
             private readonly TextReader reader;

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -59,13 +60,16 @@ namespace Medallion.Shell
             }
             finalOptions.StartInfoInitializers.ForEach(a => a(processStartInfo));
 
+            var additionalOutput = finalOptions.KeepStandardOutput ? new StringWriter() : null;
+            
             Command command = new ProcessCommand(
                 processStartInfo,
                 throwOnError: finalOptions.ThrowExceptionOnError,
                 disposeOnExit: finalOptions.DisposeProcessOnExit,
                 timeout: finalOptions.ProcessTimeout,
                 cancellationToken: finalOptions.ProcessCancellationToken,
-                standardInputEncoding: finalOptions.ProcessStreamEncoding
+                standardInputEncoding: finalOptions.ProcessStreamEncoding,
+                additionalOutput: additionalOutput
             );
             foreach (var initializer in finalOptions.CommandInitializers)
             {
@@ -201,6 +205,7 @@ namespace Medallion.Shell
             internal CommandLineSyntax CommandLineSyntax { get; private set; } = default!; // assigned in RestoreDefaults
             internal bool ThrowExceptionOnError { get; private set; }
             internal bool DisposeProcessOnExit { get; private set; }
+            internal bool KeepStandardOutput { get; private set; }
             internal TimeSpan ProcessTimeout { get; private set; }
             internal Encoding? ProcessStreamEncoding { get; private set; }
             internal CancellationToken ProcessCancellationToken { get; private set; }
@@ -216,6 +221,7 @@ namespace Medallion.Shell
                 this.CommandLineSyntax = PlatformCompatibilityHelper.DefaultCommandLineSyntax;
                 this.ThrowExceptionOnError = false;
                 this.DisposeProcessOnExit = true;
+                this.KeepStandardOutput = false;
                 this.ProcessTimeout = System.Threading.Timeout.InfiniteTimeSpan;
                 this.ProcessStreamEncoding = null;
                 this.ProcessCancellationToken = System.Threading.CancellationToken.None;
@@ -315,6 +321,17 @@ namespace Medallion.Shell
             public Options DisposeOnExit(bool value = true)
             {
                 this.DisposeProcessOnExit = value;
+                return this;
+            }
+
+            /// <summary>
+            /// If specified, standard output is preserved even if it's redirected.
+            ///
+            /// Defaults to false
+            /// </summary>
+            public Options PreserveStandardOutput(bool value = true)
+            {
+                this.KeepStandardOutput = value;
                 return this;
             }
 
