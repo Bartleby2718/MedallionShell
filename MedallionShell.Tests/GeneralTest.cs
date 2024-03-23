@@ -646,6 +646,22 @@ namespace Medallion.Shell.Tests
             await command.Task;
         }
 
+        [Test]
+        public void TestPreserveStandardOutput()
+        {
+            var results = new List<string>();
+            var command = TestShell.Run(SampleCommand, new object[] { "echo" }, options: o => o.PreserveStandardOutput()) > results;
+            command.StandardInput.Write("hello");
+            command.StandardInput.Close();
+            command.Wait();
+
+            results.Count.ShouldEqual(1);
+            results[0].ShouldEqual("hello");
+
+            var result = command.Result;
+            result.StandardOutput.ShouldEqual("hello");
+        }
+
         private IEnumerable<string> ErrorLines()
         {
             yield return "1";

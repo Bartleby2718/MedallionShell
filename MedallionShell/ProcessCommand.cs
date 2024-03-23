@@ -27,7 +27,8 @@ namespace Medallion.Shell
             bool disposeOnExit,
             TimeSpan timeout,
             CancellationToken cancellationToken,
-            Encoding? standardInputEncoding)
+            Encoding? standardInputEncoding,
+            TextWriter? additionalOutput)
         {
             this.disposeOnExit = disposeOnExit;
             this.fileName = startInfo.FileName;
@@ -41,12 +42,12 @@ namespace Medallion.Shell
             var ioTasks = new List<Task>(capacity: 2);
             if (processStandardOutput != null)
             {
-                this.standardOutputReader = new InternalProcessStreamReader(processStandardOutput);
+                this.standardOutputReader = new InternalProcessStreamReader(processStandardOutput, additionalOutput);
                 ioTasks.Add(this.standardOutputReader.Task);
             }
             if (processStandardError != null)
             {
-                this.standardErrorReader = new InternalProcessStreamReader(processStandardError);
+                this.standardErrorReader = new InternalProcessStreamReader(processStandardError, additionalOutput);
                 ioTasks.Add(this.standardErrorReader.Task);
             }
             if (processStandardInput != null)
