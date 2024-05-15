@@ -37,12 +37,13 @@ namespace Medallion.Shell
         {
             Throw.If(string.IsNullOrEmpty(executable), "executable is required");
 
+            var finalOptions = this.GetOptions(options);
+
             var executablePath = !executable.Contains(Path.DirectorySeparatorChar)
+                && finalOptions.SearchOnSystemPath
                 && SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(executable) is { } fullPath
                 ? fullPath
                 : executable;
-
-            var finalOptions = this.GetOptions(options);
 
             var processStartInfo = new ProcessStartInfo
             {
@@ -207,6 +208,7 @@ namespace Medallion.Shell
             internal CommandLineSyntax CommandLineSyntax { get; private set; } = default!; // assigned in RestoreDefaults
             internal bool ThrowExceptionOnError { get; private set; }
             internal bool DisposeProcessOnExit { get; private set; }
+            internal bool SearchOnSystemPath { get; private set; }
             internal TimeSpan ProcessTimeout { get; private set; }
             internal Encoding? ProcessStreamEncoding { get; private set; }
             internal CancellationToken ProcessCancellationToken { get; private set; }
@@ -321,6 +323,17 @@ namespace Medallion.Shell
             public Options DisposeOnExit(bool value = true)
             {
                 this.DisposeProcessOnExit = value;
+                return this;
+            }
+
+            /// <summary>
+            /// If specified, the underlying <see cref="Process"/> will search for the system path, like a shell would.
+            ///
+            /// Defaults to false
+            /// </summary>
+            public Options SearchSystemPath(bool value = false)
+            {
+                this.SearchOnSystemPath = value;
                 return this;
             }
 
