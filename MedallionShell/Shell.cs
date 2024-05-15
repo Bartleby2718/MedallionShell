@@ -39,8 +39,7 @@ namespace Medallion.Shell
 
             var finalOptions = this.GetOptions(options);
 
-            var executablePath = !executable.Contains(Path.DirectorySeparatorChar)
-                && finalOptions.SearchOnSystemPath
+            var executablePath = finalOptions.SearchOnSystemPath
                 && SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(executable) is { } fullPath
                 ? fullPath
                 : executable;

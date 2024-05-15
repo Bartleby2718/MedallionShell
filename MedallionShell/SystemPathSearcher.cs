@@ -9,18 +9,16 @@ internal static class SystemPathSearcher
 {
     public static string? GetFullPathUsingSystemPathOrDefault(string executable)
     {
-        var paths = Environment.GetEnvironmentVariable("PATH")!.Split(Path.PathSeparator);
+        if (executable.Contains(Path.DirectorySeparatorChar)) { return null; }
+        if (Environment.GetEnvironmentVariable("PATH") is not { } pathEnvironmentVariable) { return null; }
+        
+        var paths = pathEnvironmentVariable.Split(Path.PathSeparator);
+        var pathExtensions = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            && Environment.GetEnvironmentVariable("PATHEXT") is { } pathTextEnvironmentVariable
+            ? [.. pathTextEnvironmentVariable.Split(Path.PathSeparator), string.Empty]
+            : new[] { string.Empty };
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            var pathExtensions = Environment.GetEnvironmentVariable("PATHEXT")!
-                .Split(Path.PathSeparator)
-                .Concat([string.Empty])
-                .ToArray();
-            return paths.SelectMany(path => pathExtensions.Select(pathExtension => Path.Combine(path, executable + pathExtension)))
+        return paths.SelectMany(path => pathExtensions.Select(pathExtension => Path.Combine(path, executable + pathExtension)))
                 .FirstOrDefault(File.Exists);
-        }
-
-        return paths.Select(path => Path.Combine(path, executable)).FirstOrDefault(File.Exists);
     }
 }
