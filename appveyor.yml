@@ -4,6 +4,9 @@ image:
   - Visual Studio 2022
   - Ubuntu2204
 
+environment:
+  nodejs_version: "20"
+  
 build_script:
   # on linux, it seems like msbuild goes parallel such that if we don't build ProcessSignaler first, we won't have the net45 binary
   # to pack into the non-net45 builds

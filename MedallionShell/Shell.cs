@@ -325,6 +325,7 @@ namespace Medallion.Shell
                 return this;
             }
 
+#if !NETSTANDARD // not worth trying to get this working on .NET Standard
             /// <summary>
             /// If specified, the underlying <see cref="Process"/> will search for the system path, like a shell would.
             ///
@@ -335,7 +336,7 @@ namespace Medallion.Shell
                 this.SearchOnSystemPath = value;
                 return this;
             }
-
+#endif
             /// <summary>
             /// Specifies the <see cref="CommandLineSyntax"/> to use for escaping arguments. Defaults to
             /// an appropriate value for the current platform

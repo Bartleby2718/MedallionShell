@@ -12,11 +12,13 @@ using NUnit.Framework;
 
 namespace Medallion.Shell.Tests
 {
+    using System.ComponentModel;
     using Medallion.Shell.Streams;
     using static UnitTestHelpers;
 
     public class GeneralTest
     {
+#if !NETSTANDARD
         [Test]
         public void TestSearchSystemPath([Values] bool shouldSearchSystemPath)
         {
@@ -27,10 +29,10 @@ namespace Medallion.Shell.Tests
             }
             else
             {
-                Assert.Throws<InvalidOperationException>(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
+                Assert.Throws<Win32Exception>(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
             }
         }
-
+#endif
         [Test]
         public void TestGrep()
         {

@@ -27,7 +27,9 @@ internal static class SystemPathSearcher
     private static bool IsFileExecutableOnUnix(string path)
     {
         Debug.Assert(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "shouldn't be called on Windows");
-#if NET7_0_OR_GREATER
+#if NETFRAMEWORK || NETSTANDARD
+        return false;
+#elif NET7_0_OR_GREATER
         var mode = File.GetUnixFileMode(path) & (UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute);
         return mode != UnixFileMode.None;
 #else
@@ -37,7 +39,7 @@ internal static class SystemPathSearcher
 #endif
     }
 
-#if !NET7_0_OR_GREATER
+#if !NET7_0_OR_GREATER && !NETSTANDARD
     [DllImport("libc", SetLastError = true, CharSet = CharSet.Unicode)]
 #pragma warning disable SA1300 // Element should begin with upper-case letter
     private static extern int stat(string pathname, out StatBuffer statBuffer);
