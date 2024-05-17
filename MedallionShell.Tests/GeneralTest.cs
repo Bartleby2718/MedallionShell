@@ -18,9 +18,17 @@ namespace Medallion.Shell.Tests
     public class GeneralTest
     {
         [Test]
-        public void TestCommandWithoutFullyQualifiedPath()
+        public void TestSearchSystemPath([Values] bool shouldSearchSystemPath)
         {
-            Assert.That(TestShell.Run("git", "--version").StandardOutput.ReadToEnd(), Does.StartWith("git version"));
+            if (shouldSearchSystemPath)
+            {
+                var command = TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath));
+                command.Result.Success.ShouldEqual(true);
+            }
+            else
+            {
+                Assert.Throws<InvalidOperationException>(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
+            }
         }
 
         [Test]
