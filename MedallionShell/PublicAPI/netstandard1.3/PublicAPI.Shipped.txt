@@ -52,6 +52,7 @@ Medallion.Shell.Shell.Options.Command(System.Func<Medallion.Shell.Command!, Meda
 Medallion.Shell.Shell.Options.DisposeOnExit(bool value = true) -> Medallion.Shell.Shell.Options!
 Medallion.Shell.Shell.Options.Encoding(System.Text.Encoding! encoding) -> Medallion.Shell.Shell.Options!
 Medallion.Shell.Shell.Options.RestoreDefaults() -> Medallion.Shell.Shell.Options!
+Medallion.Shell.Shell.Options.SearchSystemPath(bool value = false) -> Medallion.Shell.Shell.Options!
 Medallion.Shell.Shell.Options.StartInfo(System.Action<System.Diagnostics.ProcessStartInfo!>! initializer) -> Medallion.Shell.Shell.Options!
 Medallion.Shell.Shell.Options.Syntax(Medallion.Shell.CommandLineSyntax! syntax) -> Medallion.Shell.Shell.Options!
 Medallion.Shell.Shell.Options.ThrowOnError(bool value = true) -> Medallion.Shell.Shell.Options!
