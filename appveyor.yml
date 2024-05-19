@@ -27,7 +27,7 @@ for:
     matrix: 
       only: 
         - 
-          image: "Ubuntu"
+          image: "Ubuntu2204"
     test_script:
       - echo DOTNET TEST
       - dotnet test MedallionShell.sln -c Release -f net6.0 -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.xml"
