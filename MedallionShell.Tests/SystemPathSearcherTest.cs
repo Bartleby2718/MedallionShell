@@ -51,6 +51,8 @@ public class SystemPathSearcherTest
         {
             Assert.That(
 #if NETFRAMEWORK
+                // The Split overload that takes in a string was introduced in .NET Core,
+                // and this test isn't terribly performance-sensitive, so just use Regex.
                 Regex.Split(standardOutput, Regex.Escape(Environment.NewLine)),
 #else
                 standardOutput.Split(Environment.NewLine),
@@ -78,4 +80,14 @@ public class SystemPathSearcherTest
             expected ?? string.Empty,
             $"Exit code: {command.Result.ExitCode}, StdErr: '{command.Result.StandardError}'");
     }
+
+    [Test, Platform("Win", Reason = "Tests a Windows-specific executable")]
+    public void TestInvalidInputOnWindows() =>
+        SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(@".\where.exe")
+            .ShouldEqual(null);
+
+    [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
+    public void TestInvalidInputOnLinux() =>
+        SystemPathSearcher.GetFullPathUsingSystemPathOrDefault("./which")
+            .ShouldEqual(null);
 }
