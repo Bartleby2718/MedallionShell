@@ -20,9 +20,12 @@ for:
         - 
           image: "Visual Studio 2022"
     test_script:
-      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" --filter TestGrep
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" 
+
     after_test:
       - cmd: appveyor PushArtifact TestResult.xml
+      - ps: ls
+      - ps: pwd
   # Comment out Ubuntu because it hangs for some reason
   # - 
   #   matrix: 
