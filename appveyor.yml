@@ -2,7 +2,7 @@ version: 1.0.{build}
 
 image: 
   - Visual Studio 2022
-  - Ubuntu2204
+  # - Ubuntu2204
 
 environment:
   nodejs_version: "20"
@@ -23,9 +23,9 @@ for:
       - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" 
 
     after_test:
-      - cmd: appveyor PushArtifact TestResult.xml
       - ps: ls
       - ps: pwd
+      - cmd: appveyor PushArtifact TestResult.xml
   # Comment out Ubuntu because it hangs for some reason
   # - 
   #   matrix: 
