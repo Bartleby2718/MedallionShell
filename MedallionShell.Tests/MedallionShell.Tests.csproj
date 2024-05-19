@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- NOTE: must be net46, not net472 to run Mono tests -->
-    <TargetFrameworks>net8.0;net6.0;net462</TargetFrameworks>
+    <TargetFrameworks>net6.0;net462</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
