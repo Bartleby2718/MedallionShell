@@ -20,7 +20,7 @@ for:
         - 
           image: "Visual Studio 2022"
     test_script:
-      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit3;LogFilePath=TestResult.xml"
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml"
     after_test:
       - cmd: appveyor PushArtifact TestResult.xml
   - 
@@ -30,7 +30,7 @@ for:
           image: "Ubuntu"
     test_script:
       - echo DOTNET TEST
-      - dotnet test MedallionShell.sln -c Release -f net6.0 -f net8.0 --no-build --logger:"nunit3;LogFilePath=TestResult.xml"
+      - dotnet test MedallionShell.sln -c Release -f net6.0 -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.xml"
     after_test:
       - cmd: appveyor PushArtifact TestResult.xml 
       # test mono via the NUnit console runner
