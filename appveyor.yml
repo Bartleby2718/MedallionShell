@@ -20,7 +20,9 @@ for:
         - 
           image: "Visual Studio 2022"
     test_script:
-      - dotnet test MedallionShell.sln -c Release --no-build
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml"
+    after_test:
+      - cmd: appveyor PushArtifact TestResult.xml
   - 
     matrix: 
       only: 
@@ -28,7 +30,9 @@ for:
           image: "Ubuntu"
     test_script:
       - echo DOTNET TEST
-      - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build
+      - dotnet test MedallionShell.sln -c Release -f net6.0 -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.xml"
+    after_test:
+      - cmd: appveyor PushArtifact TestResult.xml 
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.16.3 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json
       - echo MONO NETCORE
