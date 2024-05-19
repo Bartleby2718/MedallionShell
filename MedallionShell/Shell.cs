@@ -39,10 +39,13 @@ namespace Medallion.Shell
 
             var finalOptions = this.GetOptions(options);
 
+            var executablePath = executable;
+            /*
             var executablePath = finalOptions.SearchOnSystemPath
                 && SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(executable) is { } fullPath
                 ? fullPath
                 : executable;
+            */
 
             var processStartInfo = new ProcessStartInfo
             {
