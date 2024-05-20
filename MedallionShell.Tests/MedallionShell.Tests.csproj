@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- NOTE: must be net46, not net472 to run Mono tests -->
+    <!-- NOTE: must be net46, not net472 to run Mono tests. Should stay in sync with that of SampleCommands.csproj -->
     <TargetFrameworks>net8.0;net6.0;net462</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <LangVersion>Latest</LangVersion>
