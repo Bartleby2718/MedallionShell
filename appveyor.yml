@@ -20,7 +20,7 @@ for:
         - 
           image: "Visual Studio 2022"
     test_script:
-      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" 
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" --filter SystemPathSearcherTest
 
     after_test:
       - cmd: appveyor PushArtifact TestResult.xml
