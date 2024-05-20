@@ -18,8 +18,10 @@ namespace Medallion.Shell.Tests
         [Test]
         public Task TestReadAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestReadAfterExit());
 
+#if !NET8_0 // temporarily opt out until https://github.com/madelson/MedallionShell/issues/117 is fixed
         [Test]
         public Task TestWriteAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestWriteAfterExit());
+#endif
 
         [Test]
         public Task TestFlushAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestFlushAfterExit());

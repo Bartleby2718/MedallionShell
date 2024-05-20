@@ -20,16 +20,22 @@ namespace Medallion.Shell.Tests
     {
 #if !NETSTANDARD
         [Test]
-        public void TestSearchSystemPath([Values(false)] bool shouldSearchSystemPath)
+        public void TestSearchSystemPath([Values(false)] bool shouldSearchSystemPath) // TODO: revert
         {
             if (shouldSearchSystemPath)
             {
                 var command = TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath));
                 command.Result.Success.ShouldEqual(true);
             }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                // npm -v fails on Windows before adding system path search support.
+                Assert.Throws<Win32Exception>(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
+            }
             else
             {
-                Assert.Throws<Win32Exception>(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
+                // npm -v already works on Unix-like systems before adding system path search support.
+                Assert.DoesNotThrow(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
             }
         }
 #endif
