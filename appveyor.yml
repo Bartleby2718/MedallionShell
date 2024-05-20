@@ -2,7 +2,7 @@ version: 1.0.{build}
 
 image: 
   - Visual Studio 2022
-  # - Ubuntu2204
+  - Ubuntu2204
 
 environment:
   nodejs_version: "20"
@@ -25,21 +25,21 @@ for:
     after_test:
       - cmd: appveyor PushArtifact TestResult.xml
   # Comment out Ubuntu because it hangs for some reason
-  # - 
-  #   matrix: 
-  #     only: 
-  #       - 
-  #         image: "Ubuntu2204"
-  #   test_script:
-  #     - echo DOTNET TEST
-  #     # - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.net6.0.xml"
-  #     - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.net8.0.xml"
-  #     # test mono via the NUnit console runner
-  #     - nuget install NUnit.Console -Version 3.17.0 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json
-  #     - echo MONO NETCORE
-  #     - mono ./testrunner/NUnit.ConsoleRunner.3.17.0/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net6.0/MedallionShell.Tests.dll
-  #     - echo MONO NETFRAMEWORK
-  #     - mono ./testrunner/NUnit.ConsoleRunner.3.17.0/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net462/MedallionShell.Tests.dll
-  #   after_test:
-  #     # - cmd: appveyor PushArtifact TestResult.net6.0.xml 
-  #     - cmd: appveyor PushArtifact TestResult.net8.0.xml 
+  - 
+    matrix: 
+      only: 
+        - 
+          image: "Ubuntu2204"
+    test_script:
+      - echo DOTNET TEST
+      - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.net6.0.xml"
+      - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.net8.0.xml"
+      # test mono via the NUnit console runner
+      - nuget install NUnit.Console -Version 3.17.0 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json
+      - echo MONO NETCORE
+      - mono ./testrunner/NUnit.ConsoleRunner.3.17.0/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net6.0/MedallionShell.Tests.dll
+      - echo MONO NETFRAMEWORK
+      - mono ./testrunner/NUnit.ConsoleRunner.3.17.0/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net462/MedallionShell.Tests.dll
+    after_test:
+      - cmd: appveyor PushArtifact TestResult.net6.0.xml 
+      - cmd: appveyor PushArtifact TestResult.net8.0.xml 
