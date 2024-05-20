@@ -18,21 +18,21 @@ for:
     matrix: 
       only: 
         - 
-          image: "Visual Studio 2022"
+          image: Visual Studio 2022
     test_script:
       # Unconditionally collect test rest afterwards
-      - ps: dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" & appveyor PushArtifact TestResult.xml
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" & appveyor PushArtifact TestResult.xml
 
   - 
     matrix: 
       only: 
         - 
-          image: "Ubuntu2204"
+          image: Ubuntu2204
     test_script:
       # Unconditionally collect test rest afterwards
       - echo DOTNET TEST
-      - ps: dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.net6.0.xml" & appveyor PushArtifact TestResult.net6.0.xml
-      - ps: dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.net8.0.xml" & appveyor PushArtifact TestResult.net8.0.xml
+      - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.net6.0.xml"; appveyor PushArtifact TestResult.net6.0.xml
+      - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.net8.0.xml"; appveyor PushArtifact TestResult.net8.0.xml
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.17.0 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json
       - echo MONO NETCORE

@@ -40,9 +40,7 @@ namespace Medallion.Shell.Tests
             command.StandardInput.WriteLine("hi");
             command.StandardInput.WriteLine("aa");
             command.StandardInput.Dispose();
-            var output = command.StandardOutput.ReadToEnd();
-            Console.WriteLine($"full error message: {output}");
-            output.ShouldEqual("aa" + Environment.NewLine, $"Exit code: {command.Result.ExitCode}, StdErr: '{command.Result.StandardError}'");
+            command.StandardOutput.ReadToEnd().ShouldEqual("aa" + Environment.NewLine, $"Exit code: {command.Result.ExitCode}, StdErr: '{command.Result.StandardError}'");
         }
 
         [Test]

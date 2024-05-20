@@ -38,9 +38,7 @@ namespace Medallion.Shell
             Throw.If(string.IsNullOrEmpty(executable), "executable is required");
 
             var finalOptions = this.GetOptions(options);
-/*
-            var executablePath = executable;
-            */
+
             var executablePath = finalOptions.SearchOnSystemPath
                 && SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(executable) is { } fullPath
                 ? fullPath
