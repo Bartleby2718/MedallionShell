@@ -23,8 +23,6 @@ for:
       - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" 
 
     after_test:
-      - ps: ls
-      - ps: pwd
       - cmd: appveyor PushArtifact TestResult.xml
   # Comment out Ubuntu because it hangs for some reason
   # - 
