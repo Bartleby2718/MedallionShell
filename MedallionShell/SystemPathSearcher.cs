@@ -24,12 +24,13 @@ internal static class SystemPathSearcher
         // On Windows, check the PATHEXT environment variable to see which extensions are considered executable
         // https://superuser.com/q/228680
         var isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        var pathExtEnvironmentVariable = Environment.GetEnvironmentVariable("PATHEXT");
         var pathExtensions = isWindows
-            && Environment.GetEnvironmentVariable("PATHEXT") is { } pathTextEnvironmentVariable
+            && pathExtEnvironmentVariable is { }
             // It's intentional that the empty string comes first because if a) you run myfile.exe and
             // b) both myfile.exe and myfile.exe.exe exist in the same directory on the system path,
             // myfile.exe (i.e. the file with the exact match) is executed (empirically).
-            ? [string.Empty, .. pathTextEnvironmentVariable.Split(Path.PathSeparator)]
+            ? [string.Empty, .. pathExtEnvironmentVariable.Split(Path.PathSeparator)]
             // Unix-like systems don't use the extension for this purpose, so don't check for additional extensions.
             : new[] { string.Empty };
 
@@ -38,7 +39,10 @@ internal static class SystemPathSearcher
         return paths.SelectMany(path => pathExtensions.Select(pathExtension => Path.Combine(path, fileName + pathExtension)))
             // On Windows, just check for the exitence (https://stackoverflow.com/q/1653472)
             // On Unix-like systems, also check if the file has the executable permissions (https://unix.stackexchange.com/a/332954)
-            .FirstOrDefault(p => File.Exists(p) && (isWindows || IsFileExecutableOnUnix(p)));
+            .FirstOrDefault(p => File.Exists(p)
+                // On Windows, also ensure that the file ends with one of the extensions in the PATHEXT environment variable
+                && ((isWindows && pathExtEnvironmentVariable?.Split(Path.PathSeparator)?.Any(ext => p.EndsWith(ext)) != false)
+                    || IsFileExecutableOnUnix(p)));
     }
 
     private static bool IsFileExecutableOnUnix(string path)

@@ -20,7 +20,7 @@ namespace Medallion.Shell.Tests
     {
 #if !NETSTANDARD
         [Test]
-        public void TestSearchSystemPath([Values(false)] bool shouldSearchSystemPath) // TODO: revert
+        public void TestSearchSystemPath([Values] bool shouldSearchSystemPath)
         {
             if (shouldSearchSystemPath)
             {
