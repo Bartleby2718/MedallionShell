@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- NOTE: must be net46, not net472 to run Mono tests -->
-    <TargetFrameworks>net6.0;net46</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0;net46</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <LangVersion>Latest</LangVersion>
