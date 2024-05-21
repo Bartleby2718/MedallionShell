@@ -41,8 +41,9 @@ internal static class SystemPathSearcher
             // On Unix-like systems, also check if the file has the executable permissions (https://unix.stackexchange.com/a/332954)
             .FirstOrDefault(p => File.Exists(p)
                 // On Windows, also ensure that the file ends with one of the extensions in the PATHEXT environment variable
-                && ((isWindows && pathExtEnvironmentVariable?.Split(Path.PathSeparator)?.Any(ext => p.EndsWith(ext)) != false)
-                    || IsFileExecutableOnUnix(p)));
+                && (isWindows
+                    ? pathExtEnvironmentVariable?.Split(Path.PathSeparator)?.Any(ext => p.EndsWith(ext)) != false
+                    : IsFileExecutableOnUnix(p)));
     }
 
     private static bool IsFileExecutableOnUnix(string path)
