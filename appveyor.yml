@@ -21,7 +21,7 @@ for:
           image: "Visual Studio 2022"
     test_script:
       # Unconditionally collect test rest afterwards
-      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml" & appveyor PushArtifact MedallionShell.Tests\TestResult.*.xml
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml" & appveyor PushArtifact "MedallionShell.Tests\TestResult.*.xml"
 
   - 
     matrix: 
