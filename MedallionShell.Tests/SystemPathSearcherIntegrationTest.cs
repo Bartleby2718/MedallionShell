@@ -43,7 +43,7 @@ public class SystemPathSearcherIntegrationTest
         }
     }
 
-#if !NETFRAMEWORK
+#if NET8_0
     [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
     public void TestExcludeFilesWithExecutableBitsUnset()
     {
