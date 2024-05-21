@@ -51,9 +51,9 @@ public class SystemPathSearcherIntegrationTest
         // Write to console because this can be annoying if the test is aborted without executing the revert in the finally block
         Console.WriteLine(originalPath);
 
-        // Copy explorer.exe to a temp directory, where we have write access
+        // Copy executable to a temp directory, where we have write access
         var tempDirectory = Path.GetTempPath();
-        const string WhichExecutableFullPath = "/usr/bin/which";
+        const string WhichExecutableFullPath = "/usr/bin/ls";
         var newFilePath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
 
         // Add the temp directory at the beginning of the path, so that it takes precedence.
@@ -64,7 +64,7 @@ public class SystemPathSearcherIntegrationTest
         {
             File.Copy(WhichExecutableFullPath, newFilePath);
             File.SetAttributes(newFilePath, FileAttributes.ReadOnly);
-
+            File.SetUnixFileMode(newFilePath, ~UnixFileMode.UserExecute | ~UnixFileMode.GroupExecute | ~UnixFileMode.OtherExecute);
             SystemPathSearcher.GetFullPathUsingSystemPathOrDefault("which")
                 .ShouldEqual(null);
         }
