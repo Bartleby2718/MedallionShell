@@ -4,14 +4,23 @@ image:
   - Visual Studio 2022
   - Ubuntu2204
 
-environment:
-  nodejs_version: "20"
-
 build_script:
   # on linux, it seems like msbuild goes parallel such that if we don't build ProcessSignaler first, we won't have the net45 binary
   # to pack into the non-net45 builds
   - dotnet build MedallionShell.ProcessSignaler/MedallionShell.ProcessSignaler.csproj -c Release
   - dotnet build MedallionShell.sln -c Release
+
+# Unconditionally collect test restults
+on_finish:
+  - ps: |
+      $headers = @{
+        "Content-Type" = "application/xml"
+        "Authorization" = "Bearer $env:APPVEYOR_API_TOKEN"
+      }
+      Get-ChildItem -Path . -Filter TestResult.*.xml -Recurse | ForEach-Object {
+        $content = Get-Content $_.FullName -Raw
+        $response = Invoke-RestMethod -Uri "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)" -Method Post -Headers $headers -Body $content
+      }
 
 for: 
   - 
@@ -20,8 +29,7 @@ for:
         - 
           image: "Visual Studio 2022"
     test_script:
-      # Unconditionally collect test rest afterwards
-      - ps: dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml" ; Get-ChildItem .\MedallionShell.Tests\TestResult.*.xml | % { Push-AppveyorArtifact $_.FullName -FileName $_.Name }
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
 
   - 
     matrix: 
@@ -32,12 +40,12 @@ for:
       # Unconditionally collect test rest afterwards
       - echo DOTNET TEST
       # The active test run was aborted. Reason: Test host process crashed
-      # - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"; appveyor PushArtifact MedallionShell.Tests/TestResult.NETCoreApp60.xml
-      - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"; appveyor PushArtifact MedallionShell.Tests/TestResult.NETCoreApp80.xml
+      # - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
+      - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.16.3 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json
       - echo MONO NETCORE
-      # - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net6.0/MedallionShell.Tests.dll
+      - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net6.0/MedallionShell.Tests.dll
       - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net8.0/MedallionShell.Tests.dll
       - echo MONO NETFRAMEWORK
       - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net462/MedallionShell.Tests.dll
