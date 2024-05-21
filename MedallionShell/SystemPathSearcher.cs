@@ -42,7 +42,7 @@ internal static class SystemPathSearcher
             .FirstOrDefault(p => File.Exists(p)
                 // On Windows, also ensure that the file ends with one of the extensions in the PATHEXT environment variable
                 && (isWindows
-                    ? pathExtEnvironmentVariable?.Split(Path.PathSeparator)?.Any(ext => p.EndsWith(ext)) != false
+                    ? pathExtEnvironmentVariable?.Split(Path.PathSeparator)?.Any(ext => p.EndsWith(ext, StringComparison.OrdinalIgnoreCase)) != false
                     : IsFileExecutableOnUnix(p)));
     }
 
