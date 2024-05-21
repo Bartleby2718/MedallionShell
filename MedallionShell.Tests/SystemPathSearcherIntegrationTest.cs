@@ -47,6 +47,7 @@ public class SystemPathSearcherIntegrationTest
     [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
     public void TestExcludeFilesWithExecutableBitsUnset()
     {
+        Debug.Assert(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows), "not on windows");
         var originalPath = Environment.GetEnvironmentVariable("PATH");
         // Write to console because this can be annoying if the test is aborted without executing the revert in the finally block
         Console.WriteLine(originalPath);
