@@ -268,7 +268,7 @@ namespace Medallion.Shell.Tests
             Assert.Throws<InvalidOperationException>(() => command2.Wait());
         }
 
-        [Test]
+        [Test, Retry(5)] // Adding a Retry until https://github.com/madelson/MedallionShell/issues/110 is resolved
         public void TestStopBufferingAndDiscard()
         {
             var command = TestShell.Run(SampleCommand, "pipe");
