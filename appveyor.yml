@@ -8,17 +8,14 @@ environment:
   nodejs_version: "20"
 
 before_build:
-  - which pwsh
-  - which git
-  - which docker
-  - which dotnet
-  - which nvm
+  # - which pwsh  # /usr/bin/pwsh
+  # - which git # /usr/bin/git
+  # - which docker # /usr/bin/docker
+  # - which dotnet # /usr/bin/dotnet
   - which node
-  - which gvm
   - which go
   - which clang
   - which gcc
-  - which rvm
   - which ruby
   - which python3
   - which pip3
@@ -32,13 +29,10 @@ before_build:
   - git --version
   - docker --version
   - dotnet --version
-  - nvm --version
   - node --version
-  - gvm version
   - go version
   - clang --version
   - gcc --version
-  - rvm --version
   - ruby --version
   - python3 --version
   - pip3 --version
