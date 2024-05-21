@@ -53,8 +53,10 @@ public class SystemPathSearcherIntegrationTest
         Console.WriteLine(originalPath);
 
         // Copy executable to a temp directory, where we have write access
-        var tempDirectory = Path.GetTempPath();
-        const string WhichExecutableFullPath = "/usr/bin/ls";
+        var tempDirectory = Path.Combine(Path.GetTempPath(), "newPath");
+        const string WhichExecutableFullPath = "/usr/bin/which";
+        // temporarily move to a non-path directory
+        File.Move(WhichExecutableFullPath, Path.Combine(tempDirectory. Path.GetFileName(WhichExecutableFullPath)));
         var newFilePath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
 
         // Add the temp directory at the beginning of the path, so that it takes precedence.
