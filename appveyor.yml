@@ -1,12 +1,55 @@
 version: 1.0.{build}
 
 image: 
-  - Visual Studio 2022
+  # - Visual Studio 2022
   - Ubuntu2204
 
 environment:
   nodejs_version: "20"
-  
+
+before_build:
+  - which pwsh
+  - which git
+  - which docker
+  - which dotnet
+  - which nvm
+  - which node
+  - which gvm
+  - which go
+  - which clang
+  - which gcc
+  - which rvm
+  - which ruby
+  - which python3
+  - which pip3
+  - which yarn
+  - which wget
+  - which curl
+  - which cmake
+  - which mysql
+  - which firefox
+  - pwsh --version
+  - git --version
+  - docker --version
+  - dotnet --version
+  - nvm --version
+  - node --version
+  - gvm version
+  - go version
+  - clang --version
+  - gcc --version
+  - rvm --version
+  - ruby --version
+  - python3 --version
+  - pip3 --version
+  - yarn --version
+  - wget --version
+  - curl --version
+  - cmake --version
+  - mysql --version
+  - firefox --version
+  - exit 1
+
 build_script:
   # on linux, it seems like msbuild goes parallel such that if we don't build ProcessSignaler first, we won't have the net45 binary
   # to pack into the non-net45 builds
