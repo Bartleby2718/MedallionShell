@@ -7,7 +7,7 @@ image:
 environment:
   nodejs_version: "20"
 
-before_build:
+# before_build:
   # - which pwsh  # /usr/bin/pwsh
   # - which git # /usr/bin/git
   # - which docker # /usr/bin/docker
@@ -49,15 +49,51 @@ before_build:
   #   3.0.6
   #   3.1.4
   #   3.2.3
-  - python3 --version
-  - pip3 --version
-  - yarn --version
-  - wget --version
-  - curl --version
-  - cmake --version
-  - mysql --version
-  - firefox --version
-  - exit 1
+  # - python3 --version # Python 3.10.12
+  # - pip3 --version # pip 24.0 from /usr/local/lib/python3.10/dist-packages/pip (python 3.10)
+  # - yarn --version # 1.22.19
+  # - wget --version
+# GNU Wget 1.21.2 built on linux-gnu.
+# -cares +digest -gpgme +https +ipv6 +iri +large-file -metalink +nls 
+# +ntlm +opie +psl +ssl/openssl 
+# Wgetrc: 
+#     /etc/wgetrc (system)
+# Locale: 
+#     /usr/share/locale 
+# Compile: 
+#     gcc -DHAVE_CONFIG_H -DSYSTEM_WGETRC="/etc/wgetrc" 
+#     -DLOCALEDIR="/usr/share/locale" -I. -I../../src -I../lib 
+#     -I../../lib -Wdate-time -D_FORTIFY_SOURCE=2 -DHAVE_LIBSSL -DNDEBUG 
+#     -g -O2 -ffile-prefix-map=/build/wget-8g5eYO/wget-1.21.2=. 
+#     -flto=auto -ffat-lto-objects -flto=auto -ffat-lto-objects 
+#     -fstack-protector-strong -Wformat -Werror=format-security 
+#     -DNO_SSLv2 -D_FILE_OFFSET_BITS=64 -g -Wall 
+# Link: 
+#     gcc -DHAVE_LIBSSL -DNDEBUG -g -O2 
+#     -ffile-prefix-map=/build/wget-8g5eYO/wget-1.21.2=. -flto=auto 
+#     -ffat-lto-objects -flto=auto -ffat-lto-objects 
+#     -fstack-protector-strong -Wformat -Werror=format-security 
+#     -DNO_SSLv2 -D_FILE_OFFSET_BITS=64 -g -Wall -Wl,-Bsymbolic-functions 
+#     -flto=auto -ffat-lto-objects -flto=auto -Wl,-z,relro -Wl,-z,now 
+#     -lpcre2-8 -luuid -lidn2 -lssl -lcrypto -lz -lpsl ftp-opie.o 
+#     openssl.o http-ntlm.o ../lib/libgnu.a 
+# Copyright (C) 2015 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later
+# <http://www.gnu.org/licenses/gpl.html>.
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+# Originally written by Hrvoje Niksic <hniksic@xemacs.org>.
+# Please send bug reports and questions to <bug-wget@gnu.org>.
+
+  # - curl --version
+  # curl 7.81.0 (x86_64-pc-linux-gnu) libcurl/7.81.0 OpenSSL/3.0.2 zlib/1.2.11 brotli/1.0.9 zstd/1.4.8 libidn2/2.3.2 libpsl/0.21.0 (+libidn2/2.3.2) libssh/0.9.6/openssl/zlib nghttp2/1.43.0 librtmp/2.3 OpenLDAP/2.5.16
+  # Release-Date: 2022-01-05
+  # Protocols: dict file ftp ftps gopher gophers http https imap imaps ldap ldaps mqtt pop3 pop3s rtmp rtsp scp sftp smb smbs smtp smtps telnet tftp 
+  # Features: alt-svc AsynchDNS brotli GSS-API HSTS HTTP2 HTTPS-proxy IDN IPv6 Kerberos Largefile libz NTLM NTLM_WB PSL SPNEGO SSL TLS-SRP UnixSockets zstd
+  # - cmake --version
+  # cmake version 3.27.1
+  # CMake suite maintained and supported by Kitware (kitware.com/cmake).
+  # - mysql --version # mysql  Ver 8.0.36-0ubuntu0.22.04.1 for Linux on x86_64 ((Ubuntu))
 
 build_script:
   # on linux, it seems like msbuild goes parallel such that if we don't build ProcessSignaler first, we won't have the net45 binary
@@ -73,7 +109,7 @@ for:
           image: "Visual Studio 2022"
     test_script:
       # Unconditionally collect test rest afterwards
-      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" & appveyor PushArtifact TestResult.xml
+      - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.xml" --filter TestRunUnixExecutableWithOrWithoutSearchSystemPath & appveyor PushArtifact TestResult.xml
 
   - 
     matrix: 
