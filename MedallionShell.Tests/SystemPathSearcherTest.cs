@@ -71,7 +71,7 @@ public class SystemPathSearcherTest
     [TestCase("grep", "--version")]
     public void TestRunUnixExecutableWithOrWithoutSearchSystemPath(string executable, string argument, [Values] bool shouldSearchSystemPath)
     {
-        var command = TestShell.Run(executable, [argument], o => o.SearchSystemPath(shouldSearchSystemPath));
+        var command = Command.Run(executable, [argument], o => o.SearchSystemPath(shouldSearchSystemPath));
         command.Result.Success.ShouldEqual(true);
     }
 #endif
