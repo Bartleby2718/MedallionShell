@@ -55,16 +55,17 @@ public class SystemPathSearcherIntegrationTest
         // Copy executable to a temp directory, where we have write access
         var tempDirectory = Path.Combine(Path.GetTempPath(), "newPath");
         const string WhichExecutableFullPath = "/usr/bin/which";
-        // temporarily move to a non-path directory
-        File.Move(WhichExecutableFullPath, Path.Combine(tempDirectory. Path.GetFileName(WhichExecutableFullPath)));
         var newFilePath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
 
         // Add the temp directory at the beginning of the path, so that it takes precedence.
         var temporaryPath = $"{tempDirectory}{Path.PathSeparator}{originalPath}";
         Environment.SetEnvironmentVariable("PATH", temporaryPath);
 
+        var temporaryWhichExecutableFullPath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
         try
         {
+            // temporarily move to a non-path directory
+            File.Move(WhichExecutableFullPath, temporaryWhichExecutableFullPath);
             File.Copy(WhichExecutableFullPath, newFilePath);
             File.SetAttributes(newFilePath, FileAttributes.ReadOnly);
             var currentMode = File.GetUnixFileMode(newFilePath);
@@ -75,7 +76,7 @@ public class SystemPathSearcherIntegrationTest
         finally
         {
             File.Delete(newFilePath);
-
+            File.Move(WhichExecutableFullPath, temporaryWhichExecutableFullPath);
             Environment.SetEnvironmentVariable("PATH", originalPath);
         }
     }
