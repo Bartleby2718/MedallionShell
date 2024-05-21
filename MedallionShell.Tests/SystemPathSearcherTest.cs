@@ -79,11 +79,11 @@ public class SystemPathSearcherTest
     [TestCase("dotnet", "/usr/bin/dotnet")]
     [TestCase("which", "/usr/bin/which")]
     [TestCase("head", "/usr/bin/head")]
-    [TestCase("sh", "/bin/sh")]
-    [TestCase("ls", "/bin/ls")]
-    [TestCase("grep", "/bin/grep")]
-    [TestCase("sleep", "/bin/sleep")]
-    [TestCase("echo", "/bin/echo")]
+    [TestCase("sh", "/usr/bin/sh")]
+    [TestCase("ls", "/usr/bin/ls")]
+    [TestCase("grep", "/usr/bin/grep")]
+    [TestCase("sleep", "/usr/bin/sleep")]
+    [TestCase("echo", "/usr/bin/echo")]
     [TestCase("does.not.exist", null)]
     public void TestGetFullPathOnLinux(string executable, string? expected)
     {
