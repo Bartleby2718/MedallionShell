@@ -12,28 +12,43 @@ before_build:
   # - which git # /usr/bin/git
   # - which docker # /usr/bin/docker
   # - which dotnet # /usr/bin/dotnet
-  - which node
-  - which go
-  - which clang
-  - which gcc
-  - which ruby
-  - which python3
-  - which pip3
-  - which yarn
-  - which wget
-  - which curl
-  - which cmake
-  - which mysql
-  - which firefox
-  - pwsh --version
-  - git --version
-  - docker --version
-  - dotnet --version
-  - node --version
-  - go version
-  - clang --version
-  - gcc --version
-  - ruby --version
+  # - which node # /home/appveyor/.nvm/versions/node/v16.20.2/bin/node
+  # - which go # /home/appveyor/.gvm/gos/go1.22.0/bin/go
+  # - which clang # /usr/bin/clang
+  # - which gcc # /usr/bin/gcc
+  # - which ruby # /home/appveyor/.rbenv/shims/ruby
+  # - which python3 # /usr/bin/python3
+  # - which pip3 # /usr/local/bin/pip3
+  # - which yarn # /usr/bin/yarn
+  # - which wget # /usr/bin/wget
+  # - which curl # /usr/bin/curl
+  # - which cmake # /usr/bin/cmake
+  # - which mysql # /usr/bin/mysql
+  # - which firefox # /usr/bin/firefox
+  # - pwsh --version # PowerShell 7.4.1
+  # - git --version # git version 2.43.2
+  # - docker --version # Docker version 25.0.3, build 4debf41
+  # - dotnet --version # 8.0.200
+  # - node --version # v16.20.2
+  # - go version # go version go1.22.0 linux/amd64
+  # - clang --version 
+  # Ubuntu clang version 13.0.1-2ubuntu2.2
+  # Target: x86_64-pc-linux-gnu
+  # Thread model: posix
+  # InstalledDir: /usr/bin
+  # - gcc --version
+  # gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+  # Copyright (C) 2021 Free Software Foundation, Inc.
+  # This is free software; see the source for copying conditions.  There is NO
+  # warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  # - ruby --version
+  #   rbenv: ruby: command not found
+  # The `ruby' command exists in these Ruby versions:
+  #   2.6.10
+  #   2.7.8
+  #   3.0.6
+  #   3.1.4
+  #   3.2.3
   - python3 --version
   - pip3 --version
   - yarn --version
