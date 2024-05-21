@@ -62,16 +62,15 @@ public class SystemPathSearcherTest
     }
 
 #if NETCOREAPP3_1_OR_GREATER
-    [Platform("Unix", Reason = "Tests Unix-specific executables")]
-    [TestCase("git", "--version")]
-    [TestCase("node", "--version")]
-    [TestCase("go", "version")]
-    [TestCase("pip3", "--version")]
-    [TestCase("ls", "--version")]
-    [TestCase("grep", "--version")]
-    public void TestRunUnixExecutableWithOrWithoutSearchSystemPath(string executable, string argument, [Values] bool shouldSearchSystemPath)
+    [Test, Platform("Unix", Reason = "Tests Unix-specific executables")]
+    public void TestRunUnixExecutableWithOrWithoutSearchSystemPath(
+        [Values("git", "node", "go", "pip3", "ls", "grep")] string executable,
+        [Values] bool shouldSearchSystemPath)
     {
-        var command = Command.Run(executable, [argument], o => o.SearchSystemPath(shouldSearchSystemPath));
+        var command = Command.Run(
+            executable,
+            [executable == "go" ? "version" : "--version"],
+            o => o.SearchSystemPath(shouldSearchSystemPath));
         command.Result.Success.ShouldEqual(true);
     }
 #endif
