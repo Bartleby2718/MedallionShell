@@ -54,6 +54,7 @@ public class SystemPathSearcherIntegrationTest
 
         // Copy executable to a temp directory, where we have write access
         var tempDirectory = Path.Combine(Path.GetTempPath(), "newPath");
+        Directory.CreateDirectory(tempDirectory);
         const string WhichExecutableFullPath = "/usr/bin/which";
         var newFilePath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
 
