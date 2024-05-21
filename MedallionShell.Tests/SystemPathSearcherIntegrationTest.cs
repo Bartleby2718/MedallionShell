@@ -65,7 +65,8 @@ public class SystemPathSearcherIntegrationTest
         {
             File.Copy(WhichExecutableFullPath, newFilePath);
             File.SetAttributes(newFilePath, FileAttributes.ReadOnly);
-            File.SetUnixFileMode(newFilePath, ~UnixFileMode.UserExecute & ~UnixFileMode.GroupExecute & ~UnixFileMode.OtherExecute);
+            var currentMode = File.GetUnixFileMode(newFilePath);
+            File.SetUnixFileMode(newFilePath, currentMode & ~(UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute));
             SystemPathSearcher.GetFullPathUsingSystemPathOrDefault("which")
                 .ShouldEqual(null);
         }
