@@ -61,7 +61,7 @@ public class SystemPathSearcherTest
         }
     }
 
-#if NETCOREAPP3_1_OR_GREATER
+#if !NETSTANDARD && !NETFRAMEWORK
     [Test, Platform("Unix", Reason = "Tests Unix-specific executables")]
     public void TestRunUnixExecutableWithOrWithoutSearchSystemPath(
         [Values("git", "node", "go", "pip3", "ls", "grep")] string executable,
@@ -73,7 +73,6 @@ public class SystemPathSearcherTest
             o => o.SearchSystemPath(shouldSearchSystemPath));
         command.Result.Success.ShouldEqual(true);
     }
-#endif
 
     [Platform("Unix", Reason = "Tests Unix-specific executables")]
     [TestCase("dotnet", "/usr/bin/dotnet")]
@@ -95,13 +94,14 @@ public class SystemPathSearcherTest
             $"Exit code: {command.Result.ExitCode}, StdErr: '{command.Result.StandardError}'");
     }
 
-    [Test, Platform("Win", Reason = "Tests a Windows-specific executable")]
-    public void TestInvalidInputOnWindows() =>
-        SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(@".\where.exe")
-            .ShouldEqual(null);
-
     [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
     public void TestInvalidInputOnLinux() =>
         SystemPathSearcher.GetFullPathUsingSystemPathOrDefault("./which")
+            .ShouldEqual(null);
+#endif
+
+    [Test, Platform("Win", Reason = "Tests a Windows-specific executable")]
+    public void TestInvalidInputOnWindows() =>
+        SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(@".\where.exe")
             .ShouldEqual(null);
 }

@@ -14,7 +14,7 @@ build_script:
 on_finish:
   - ps: |
       $wc = New-Object 'System.Net.WebClient'
-      Get-ChildItem .\TestResult*.xml | ForEach-Object {
+      Get-ChildItem .\MedallionShell.Tests\TestResult*.xml | ForEach-Object {
         $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $_.FullName))
       }
 
@@ -32,10 +32,15 @@ for:
       only: 
         - 
           image: Ubuntu2204
+    before_test:
+      - sudo apt install ca-certificates gnupg -yq
+      - sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+      - echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
+      - sudo apt update -yq
+      - sudo apt install mono-devel -yq
     test_script:
-      # Unconditionally collect test rest afterwards
       - echo DOTNET TEST
-      # The active test run was aborted. Reason: Test host process crashed
+      # Error message for net6.0: The active test run was aborted. Reason: Test host process crashed
       # - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
       - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
       # test mono via the NUnit console runner

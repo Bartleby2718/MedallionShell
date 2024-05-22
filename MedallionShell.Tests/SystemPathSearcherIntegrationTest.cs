@@ -43,6 +43,7 @@ public class SystemPathSearcherIntegrationTest
         }
     }
 
+#if !NETSTANDARD && !NETFRAMEWORK
 #if NET8_0
     [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
     public void TestExcludeFilesWithExecutableBitsUnset()
@@ -80,6 +81,7 @@ public class SystemPathSearcherIntegrationTest
         }
     }
 #endif
+#endif
 
     [Test, Platform("Win", Reason = "Tests a Windows-specific executable")]
     public void TestReturnNullWhenPathExtensionEnvironmentVariableIsEmptyOnWindows() => TestInvalidInput("PATHEXT", "where");
@@ -88,8 +90,10 @@ public class SystemPathSearcherIntegrationTest
 
     public void TestReturnNullWhenPathEnvironmentVariableIsEmptyOnWindows() => TestInvalidInput("PATH", "where");
 
+#if !NETSTANDARD && !NETFRAMEWORK
     [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
     public void TestReturnNullWhenPathEnvironmentVariableIsEmptyOnUnix() => TestInvalidInput("PATH", "which");
+#endif
 
     private static void TestInvalidInput(string environmentVariableName, string executable)
     {
