@@ -69,7 +69,7 @@ public class SystemPathSearcherIntegrationTest
 
             // Once we set the executable bit, the file should be returned.
             var currentMode = File.GetUnixFileMode(newFilePath);
-            File.SetUnixFileMode(newFilePath, currentMode & UnixFileMode.UserExecute);
+            File.SetUnixFileMode(newFilePath, currentMode | UnixFileMode.UserExecute);
             SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(FileName)
                 .ShouldEqual(newFilePath);
         }
