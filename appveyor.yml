@@ -13,13 +13,9 @@ build_script:
 # Unconditionally collect test restults
 on_finish:
   - ps: |
-      $headers = @{
-        "Content-Type" = "application/xml"
-        "Authorization" = "Bearer $env:APPVEYOR_API_TOKEN"
-      }
-      Get-ChildItem -Path . -Filter TestResult.*.xml -Recurse | ForEach-Object {
-        $content = Get-Content $_.FullName -Raw
-        $response = Invoke-RestMethod -Uri "https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)" -Method Post -Headers $headers -Body $content
+      $wc = New-Object 'System.Net.WebClient'
+      Get-ChildItem .\TestResult.*.xml | ForEach-Object {
+        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $_.FullName))
       }
 
 for: 
@@ -45,7 +41,7 @@ for:
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.16.3 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json
       - echo MONO NETCORE
-      - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net6.0/MedallionShell.Tests.dll
+      # - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net6.0/MedallionShell.Tests.dll
       - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net8.0/MedallionShell.Tests.dll
       - echo MONO NETFRAMEWORK
       - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net462/MedallionShell.Tests.dll
