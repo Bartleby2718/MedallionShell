@@ -52,32 +52,30 @@ public class SystemPathSearcherIntegrationTest
         // Write to console because this can be annoying if the test is aborted without executing the revert in the finally block
         Console.WriteLine(originalPath);
 
-        // Copy executable to a temp directory, where we have write access
-        var tempDirectory = Path.Combine(Path.GetTempPath(), "newPath");
-        Directory.CreateDirectory(tempDirectory);
-        const string WhichExecutableFullPath = "/usr/bin/which";
-        var newFilePath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
+        // Create a file in a temp directory, where we have write access
+        var tempDirectory = Path.GetTempPath();
+        const string FileName = "hello.world";
+        var newFilePath = Path.Combine(tempDirectory, FileName);
 
-        // Add the temp directory at the beginning of the path, so that it takes precedence.
-        var temporaryPath = $"{tempDirectory}{Path.PathSeparator}{originalPath}";
-        Environment.SetEnvironmentVariable("PATH", temporaryPath);
+        // Add the temp directory to the PATH
+        Environment.SetEnvironmentVariable("PATH", $"{tempDirectory}{Path.PathSeparator}{originalPath}");
 
-        var temporaryWhichExecutableFullPath = Path.Combine(tempDirectory, Path.GetFileName(WhichExecutableFullPath));
+        File.WriteAllText(newFilePath, $"#!/usr/bin/env bash{Environment.NewLine}echo hello world");
         try
         {
-            // temporarily move to a non-path directory
-            File.Move(WhichExecutableFullPath, temporaryWhichExecutableFullPath);
-            File.Copy(WhichExecutableFullPath, newFilePath);
-            File.SetAttributes(newFilePath, FileAttributes.ReadOnly);
-            var currentMode = File.GetUnixFileMode(newFilePath);
-            File.SetUnixFileMode(newFilePath, currentMode & ~(UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute));
-            SystemPathSearcher.GetFullPathUsingSystemPathOrDefault("which")
+            // Not found because a new file created by .NET is not executable by default
+            SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(FileName)
                 .ShouldEqual(null);
+
+            // Once we set the executable bit, the file should be returned.
+            var currentMode = File.GetUnixFileMode(newFilePath);
+            File.SetUnixFileMode(newFilePath, currentMode & UnixFileMode.UserExecute);
+            SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(FileName)
+                .ShouldEqual(newFilePath);
         }
         finally
         {
             File.Delete(newFilePath);
-            File.Move(WhichExecutableFullPath, temporaryWhichExecutableFullPath);
             Environment.SetEnvironmentVariable("PATH", originalPath);
         }
     }
