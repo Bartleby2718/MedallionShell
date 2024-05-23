@@ -10,13 +10,9 @@ build_script:
   - dotnet build MedallionShell.ProcessSignaler/MedallionShell.ProcessSignaler.csproj -c Release
   - dotnet build MedallionShell.sln -c Release
 
-# Unconditionally collect test restults
 on_finish:
-  - ps: |
-      $wc = New-Object 'System.Net.WebClient'
-      Get-ChildItem .\MedallionShell.Tests\TestResult*.xml | ForEach-Object {
-        $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $_))
-      }
+  - sh: |
+      find ./MedallionShell.Tests/ -type f -name 'TestResult*.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/nunit3/$APPVEYOR_JOB_ID"
 
 for: 
   - 
