@@ -68,7 +68,7 @@ internal static class SystemPathSearcher
     }
 
     // https://en.wikipedia.org/wiki/Stat_%28system_call%29
-    [DllImport("libc", SetLastError = true, CharSet = CharSet.Unicode)]
+    [DllImport("libc", SetLastError = true, CharSet = CharSet.Ansi)]
 #pragma warning disable SA1300 // Element should begin with upper-case letter
     private static extern int stat(string pathname, out StatBuffer statBuffer);
 #pragma warning restore SA1300 // Element should begin with upper-case letter
@@ -86,9 +86,9 @@ internal static class SystemPathSearcher
         public uint st_gid;
         public ulong st_rdev;
         public long st_size;
-        public long st_atime;
-        public long st_mtime;
-        public long st_ctime;
+        public IntPtr st_atime;
+        public IntPtr st_mtime;
+        public IntPtr st_ctime;
 #pragma warning restore SA1310 // Field names should not contain underscore
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #endif
