@@ -39,7 +39,7 @@ for:
     test_script:
       - echo DOTNET TEST
       # Error message for net6.0: The active test run was aborted. Reason: Test host process crashed
-      - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml" --filter Name!~SystemPath
+      - dotnet test MedallionShell.sln -c Release -f net6.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
       - dotnet test MedallionShell.sln -c Release -f net8.0 --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.16.3 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json -Verbosity quiet

@@ -57,40 +57,17 @@ internal static class SystemPathSearcher
         return mode != UnixFileMode.None;
 #elif NETSTANDARD || NETFRAMEWORK // Fail gracefully because neither the method above nor the method below works on UWP (and .NET Framework).
         return false;
-#else // Call the stat function using P/Invoke on .NET Core before .NET 7 (https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke)
-        const int S_IXUSR = 0x0040; // User has execute permission
-        const int S_IXGRP = 0x0008; // Group has execute permission
-        const int S_IXOTH = 0x0001; // Others have execute permission
-        return stat(path, out var statBuffer) == 0
-            && ((statBuffer.st_mode & S_IXUSR) != 0
-                || (statBuffer.st_mode & S_IXGRP) != 0
-                || (statBuffer.st_mode & S_IXOTH) != 0);
-    }
-
-    // https://en.wikipedia.org/wiki/Stat_%28system_call%29
-    [DllImport("libc", SetLastError = true, CharSet = CharSet.Ansi)]
-#pragma warning disable SA1300 // Element should begin with upper-case letter
-    private static extern int stat(string pathname, out StatBuffer statBuffer);
-#pragma warning restore SA1300 // Element should begin with upper-case letter
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct StatBuffer
-    {
-#pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
-#pragma warning disable SA1310 // Field names should not contain underscore
-        public ulong st_dev;
-        public ulong st_ino;
-        public ulong st_nlink;
-        public uint st_mode;
-        public uint st_uid;
-        public uint st_gid;
-        public ulong st_rdev;
-        public long st_size;
-        public IntPtr st_atime;
-        public IntPtr st_mtime;
-        public IntPtr st_ctime;
-#pragma warning restore SA1310 // Field names should not contain underscore
-#pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
+#else // Call the access function using P/Invoke on .NET Core before .NET 7 (https://learn.microsoft.com/en-us/dotnet/standard/native-interop/pinvoke)
+        const int X_OK = 0x01;
+        return access(path, X_OK) == 0;
 #endif
     }
+
+#if !NET7_0_OR_GREATER && !NETSTANDARD && !NETFRAMEWORK
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+	// [DllImport("libc.so.6", SetLastError = true, CharSet = CharSet.Ansi)]
+	[DllImport("libc.so.6")]
+    private static extern int access(string pathname, int mode);
+#pragma warning restore SA1300 // Element should begin with upper-case letter
+#endif
 }
