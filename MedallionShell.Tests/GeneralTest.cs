@@ -19,6 +19,7 @@ namespace Medallion.Shell.Tests
     public class GeneralTest
     {
 #if !NETSTANDARD
+#if !NET6_0
         [Test]
         public void TestSearchSystemPath([Values] bool shouldSearchSystemPath)
         {
@@ -38,6 +39,7 @@ namespace Medallion.Shell.Tests
                 Assert.DoesNotThrow(() => TestShell.Run("npm", ["-v"], o => o.SearchSystemPath(shouldSearchSystemPath)));
             }
         }
+#endif
 #endif
         [Test]
         public void TestGrep()
