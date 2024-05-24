@@ -43,4 +43,4 @@ However, I get an error:
 > 
 > So, in your case, when you run npm in Git Bash, it sees the #!/usr/bin/env bash shebang and knows to use bash to interpret the script. But when you try to run npm directly in Windows (like in your C# code), Windows doesn’t know what to do with it because it doesn’t have a .cmd or .exe extension.
 
-I'm inclined towards opting out of this additional Git Bash logic by using only the files with the extension that's in the `PATHEXT` environment variable (e.g. `.exe`, `.bat`, `.cmd`). That'll still allow `C:\Program Files\nodejs\npm.cmd` to be picked up and run `npm --version` successfully. Let me know if this
+I'm inclined towards opting out of this additional Git Bash logic by using only the files with the extension that's in the `PATHEXT` environment variable (e.g. `.exe`, `.bat`, `.cmd`). That'll still allow `C:\Program Files\nodejs\npm.cmd` to be picked up and run `npm --version` successfully. Let me know if
