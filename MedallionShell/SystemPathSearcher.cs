@@ -65,8 +65,8 @@ internal static class SystemPathSearcher
 
 #if !NET7_0_OR_GREATER && !NETSTANDARD && !NETFRAMEWORK
 #pragma warning disable SA1300 // Element should begin with upper-case letter
-	// [DllImport("libc.so.6", SetLastError = true, CharSet = CharSet.Ansi)]
-	[DllImport("libc.so.6")]
+    // [DllImport("libc.so.6", SetLastError = true, CharSet = CharSet.Ansi)]
+    [DllImport("libc.so.6")]
     private static extern int access(string pathname, int mode);
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 #endif
