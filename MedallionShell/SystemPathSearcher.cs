@@ -78,17 +78,17 @@ internal static class SystemPathSearcher
     {
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable SA1310 // Field names should not contain underscore
-        public int st_dev;
-        public short st_ino;
-        public short st_mode;
-        public short st_nlink;
-        public short st_uid;
-        public short st_gid;
-        public int st_rdev;
-        public int st_size;
-        public int st_atime;
-        public int st_mtime;
-        public int st_ctime;
+        public ulong st_dev;
+        public ulong st_ino;
+        public uint st_mode;
+        public ulong st_nlink;
+        public uint st_uid;
+        public uint st_gid;
+        public ulong st_rdev;
+        public long st_size;
+        public long st_atime;
+        public long st_mtime;
+        public long st_ctime;
 #pragma warning restore SA1310 // Field names should not contain underscore
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 #endif
