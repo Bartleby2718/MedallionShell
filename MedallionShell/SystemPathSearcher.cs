@@ -80,8 +80,8 @@ internal static class SystemPathSearcher
 #pragma warning disable SA1310 // Field names should not contain underscore
         public ulong st_dev;
         public ulong st_ino;
-        public uint st_mode;
         public ulong st_nlink;
+        public uint st_mode;
         public uint st_uid;
         public uint st_gid;
         public ulong st_rdev;
