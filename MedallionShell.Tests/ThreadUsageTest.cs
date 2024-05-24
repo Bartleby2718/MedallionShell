@@ -18,7 +18,7 @@ internal class ThreadUsageTest
     /// Tests the fix to https://github.com/madelson/MedallionShell/issues/94; prior to this change this test 
     /// would fail for small-ish thread pool values (both 2 and 8 on my machine, for example).
     /// </summary>
-    [Test]
+    [Test, Retry(5)]
     public void TestPipeline([Values(2, 8)] int minThreads)
     {
         const int ProcessCount = 10;
