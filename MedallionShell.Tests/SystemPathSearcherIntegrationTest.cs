@@ -72,8 +72,7 @@ public class SystemPathSearcherIntegrationTest
             var currentMode = File.GetUnixFileMode(newFilePath);
             File.SetUnixFileMode(newFilePath, currentMode | UnixFileMode.UserExecute);
 #else
-            const int S_IXUSR = 0x40;
-            Assert.That(chmod(FileName, S_IXUSR), Is.EqualTo(0));
+            Assert.That(chmod(newFilePath, 0x100 | 0x80 | 0x40 | 0x20 | 0x10 | 0x8 | 0x4 | 0x2 | 0x1), Is.EqualTo(0));
 #endif
 
             // Now the file is user-executable, the path should be returned.
