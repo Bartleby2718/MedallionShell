@@ -39,7 +39,7 @@ for:
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.16.3 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json -Verbosity quiet
       # - nuget install NUnit.Console -Version 3.17.0 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json -Verbosity quiet
-      - ls ./testrunner/NUnit.ConsoleRunner.3.16.3/tools
+      - ls -pal ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/agents
       - |
         echo '{
           "runtimeOptions": {
@@ -54,7 +54,7 @@ for:
               "System.Reflection.NullabilityInfoContext.IsSupported": true
             }
           }
-        }' > ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.runtimeconfig.json
+        }' > ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/agents/net8.0/nunit3-agent.runtimeconfig.json
       - echo MONO NETFRAMEWORK
       - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net462/MedallionShell.Tests.dll --where "method!=TestPipeline&method!=TestProcessIOIsCancellable"
       - echo MONO NETCORE
