@@ -10,10 +10,6 @@ build_script:
   - dotnet build MedallionShell.ProcessSignaler/MedallionShell.ProcessSignaler.csproj -c Release
   - dotnet build MedallionShell.sln -c Release
 
-on_finish:
-  - sh: |
-      find ./MedallionShell.Tests/ -type f -name 'TestResult*.xml' -print0 | xargs -0 -I '{}' curl -F 'file=@{}' "https://ci.appveyor.com/api/testresults/nunit3/$APPVEYOR_JOB_ID"
-
 for: 
   - 
     matrix: 
@@ -22,7 +18,6 @@ for:
           image: "Visual Studio 2022"
     test_script:
       - dotnet test MedallionShell.sln -c Release --no-build --logger:"nunit;LogFilePath=TestResult.{framework}.xml"
-
   - 
     matrix: 
       only: 
@@ -31,11 +26,11 @@ for:
     before_test:
       # https://www.appveyor.com/docs/windows-images-software/#mono
       # https://www.mono-project.com/download/stable/#download-lin
-      - sudo apt install ca-certificates gnupg -yq
+      - sudo apt install ca-certificates gnupg -qq
       - sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
       - echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-      - sudo apt update -yq
-      - sudo apt install mono-devel -yq
+      - sudo apt update -qq
+      - sudo apt install mono-devel -qq
     test_script:
       - echo DOTNET TEST
       # Error message for net6.0: The active test run was aborted. Reason: Test host process crashed

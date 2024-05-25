@@ -44,7 +44,6 @@ public class SystemPathSearcherIntegrationTest
     }
 
 #if !NETSTANDARD && !NETFRAMEWORK
-#if NET8_0
     [Test, Platform("Unix", Reason = "Tests a Unix-specific executable")]
     public void TestExcludeFilesWithExecutableBitsUnset()
     {
@@ -80,7 +79,6 @@ public class SystemPathSearcherIntegrationTest
             Environment.SetEnvironmentVariable("PATH", originalPath);
         }
     }
-#endif
 #endif
 
     [Test, Platform("Win", Reason = "Tests a Windows-specific executable")]

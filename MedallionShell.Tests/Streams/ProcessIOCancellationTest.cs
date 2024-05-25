@@ -16,7 +16,7 @@ namespace Medallion.Shell.Tests.Streams;
 
 internal class ProcessIOCancellationTest
 {
-    [Test, Retry(5)]
+    [Test]
     public void TestProcessIOIsCancellable()
     {
         using Process process = new()
