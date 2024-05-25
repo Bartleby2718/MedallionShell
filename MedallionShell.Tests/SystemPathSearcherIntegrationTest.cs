@@ -67,9 +67,16 @@ public class SystemPathSearcherIntegrationTest
             SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(FileName)
                 .ShouldEqual(null);
 
-            // Once we set the executable bit, the file should be returned.
+            // Set the user-executable bit.
+#if NET7_0_OR_GREATER
             var currentMode = File.GetUnixFileMode(newFilePath);
             File.SetUnixFileMode(newFilePath, currentMode | UnixFileMode.UserExecute);
+#else
+            const int S_IXUSR = 0x40;
+            Assert.That(chmod(FileName, S_IXUSR), Is.EqualTo(0));
+#endif
+
+            // Now the file is user-executable, the path should be returned.
             SystemPathSearcher.GetFullPathUsingSystemPathOrDefault(FileName)
                 .ShouldEqual(newFilePath);
         }
@@ -79,6 +86,12 @@ public class SystemPathSearcherIntegrationTest
             Environment.SetEnvironmentVariable("PATH", originalPath);
         }
     }
+#if !NET7_0_OR_GREATER
+    [DllImport("libc", SetLastError = true)]
+#pragma warning disable SA1300 // Element should begin with upper-case letter
+    private static extern int chmod(string pathname, int mode);
+#pragma warning restore SA1300 // Element should begin with upper-case letter
+#endif
 #endif
 
     [Test, Platform("Win", Reason = "Tests a Windows-specific executable")]
