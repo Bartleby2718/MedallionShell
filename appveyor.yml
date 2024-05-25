@@ -39,6 +39,22 @@ for:
       # test mono via the NUnit console runner
       - nuget install NUnit.Console -Version 3.16.3 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json -Verbosity quiet
       - nuget install NUnit.Console -Version 3.17.0 -OutputDirectory testrunner -Source https://api.nuget.org/v3/index.json -Verbosity quiet
+      - ls ./testrunner/NUnit.ConsoleRunner.3.17.0/tools
+      - |
+        echo '{
+      "runtimeOptions": {
+        "tfm": "net8.0",
+        "frameworks": [
+          {
+            "name": "Microsoft.NETCore.App",
+            "version": "8.0.0"
+          }
+        ],
+        "configProperties": {
+          "System.Reflection.NullabilityInfoContext.IsSupported": true
+        }
+      }
+    }' > ./testrunner/NUnit.ConsoleRunner.3.17.0/tools/nunit3-console.runtimeconfig.json
       - echo MONO NETFRAMEWORK
       - mono ./testrunner/NUnit.ConsoleRunner.3.16.3/tools/nunit3-console.exe ./MedallionShell.Tests/bin/Release/net462/MedallionShell.Tests.dll --where "method!=TestPipeline&method!=TestProcessIOIsCancellable"
       - echo MONO NETCORE
