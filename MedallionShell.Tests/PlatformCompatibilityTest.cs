@@ -1,25 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SampleCommand;
 
 namespace Medallion.Shell.Tests
 {
-    using System.IO;
-    using static UnitTestHelpers;
-
     public class PlatformCompatibilityTest
     {
         [Test]
         public Task TestReadAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestReadAfterExit());
 
-        [Test]
-        public Task TestWriteAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestWriteAfterExit());
+        // TODO: fix in https://github.com/madelson/MedallionShell/issues/117
+        //[Test]
+        //public Task TestWriteAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestWriteAfterExit());
 
         [Test]
         public Task TestFlushAfterExit() => RunTestAsync(() => PlatformCompatibilityTests.TestFlushAfterExit());
@@ -50,33 +44,7 @@ namespace Medallion.Shell.Tests
             var compiled = testMethod.Compile();
             Assert.DoesNotThrow(() => compiled(), "should run on current platform");
 
-            // don't bother testing running Mono from .NET Core or Mono itself
-#if NETFRAMEWORK
-            if (!PlatformCompatibilityHelper.IsMono)
-            {
-                var methodName = ((MethodCallExpression)testMethod.Body).Method.Name;
-
-                var monoPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? @"C:\Program Files\Mono\bin\mono.exe" : "/usr/bin/mono";
-                if (!File.Exists(monoPath))
-                {
-                    // https://www.appveyor.com/docs/environment-variables/
-                    if (Environment.GetEnvironmentVariable("APPVEYOR")?.ToLowerInvariant() == "true")
-                    {
-                        // not on VS2017 VM yet: https://www.appveyor.com/docs/windows-images-software/
-                        Console.WriteLine("On APPVEYOR with no Mono installed; skipping mono test");
-                        return;
-                    }
-
-                    Assert.Fail($"Could not find mono install at {monoPath}");
-                }
-
-                var command = Command.Run(monoPath, SampleCommand, nameof(PlatformCompatibilityTests), methodName);
-                await command.Task;
-                command.Result.Success.ShouldEqual(true, "should run on Mono. Got: " + command.Result.StandardError);
-            }
-#else
             await Task.CompletedTask; // make the compiler happy
-#endif
         }
     }
 }

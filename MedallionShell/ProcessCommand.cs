@@ -170,8 +170,7 @@ namespace Medallion.Shell
         {
             var taskBuilder = new TaskCompletionSource<bool>();
             // note: calling TrySetResult here on the off chance that a bug causes this event to fire twice.
-            // Apparently old versions of mono had such a bug. The issue is that any exception in this event
-            // can down the process since it fires on an unprotected threadpool thread
+            // The issue is that any exception in this event can down the process since it fires on an unprotected threadpool thread
             process.Exited += (o, e) => taskBuilder.TrySetResult(false);
 
             return taskBuilder.Task;

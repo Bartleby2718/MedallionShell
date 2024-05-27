@@ -83,9 +83,6 @@ namespace SampleCommand
             }
         }
 
-        /// <summary>
-        /// See SafeGetExitCode comment
-        /// </summary>
         public static void TestExitWithMinusOne()
         {
             var command = TestShell.Run(SampleCommandPath, "exit", -1);
@@ -114,8 +111,8 @@ namespace SampleCommand
         {
             var baseDirectory = Path.GetDirectoryName(SampleCommandPath)!;
 
-            AssertThrows<Win32Exception>(() => Command.Run(baseDirectory));
-            AssertThrows<Win32Exception>(() => Command.Run(Path.Combine(baseDirectory, "DOES_NOT_EXIST.exe")));
+            AssertThrows<InvalidOperationException>(() => Command.Run(baseDirectory));
+            AssertThrows<InvalidOperationException>(() => Command.Run(Path.Combine(baseDirectory, "DOES_NOT_EXIST.exe")));
         }
 
         public static void TestAttaching()

@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Medallion.Shell
 {
     /// <summary>
-    /// Provides <see cref="CommandLineSyntax"/> functionality for windows.
+    /// Provides cross-platform <see cref="CommandLineSyntax"/> functionality.
     /// 
     /// Note that while this class uses windows parsing rules, .NET Core actually follows the same rules when parsing
-    /// <see cref="ProcessStartInfo.Arguments"/> into argv for unix-like systems. Therefore, this class is actually
-    /// cross-platform compatible. The one exception is Mono running on Unix, which uses a different escaping scheme.
+    /// <see cref="ProcessStartInfo.Arguments"/> into argv for unix-like systems.
+    /// This does not work for Mono running on Unix, which uses a different escaping scheme.
     /// </summary>
-    public sealed class WindowsCommandLineSyntax : CommandLineSyntax
+    public sealed class CrossPlatformCommandLineSyntax : CommandLineSyntax
     {
         /// <summary>
-        /// Provides <see cref="CommandLineSyntax"/> functionality for windows
+        /// Provides cross-platform <see cref="CommandLineSyntax"/> functionality
         /// </summary>
         public override string CreateArgumentString(IEnumerable<string> arguments) => CreateArgumentString(arguments, AppendArgument);
 

@@ -400,7 +400,7 @@ namespace Medallion.Shell.Tests
             var bytes = new byte[] { 255 };
             var inputEncoded = Console.InputEncoding.GetString(bytes);
             inputEncoded.ShouldEqual(Console.OutputEncoding.GetString(bytes)); // sanity check
-            // mono and .NET Core will default to UTF8
+            // .NET Core will default to UTF8
             var defaultsToUtf8 = Console.InputEncoding.WebName == Encoding.UTF8.WebName;
             if (!defaultsToUtf8)
             {
@@ -582,10 +582,8 @@ namespace Medallion.Shell.Tests
                 command.StandardInput.WriteLine(new string('a', i));
             }
 
-            // workaround for https://github.com/mono/mono/issues/18279; so far
-            // I've encountered this only on Mono Linux
-            if (PlatformCompatibilityHelper.IsMono
-                && !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            // TODO: This used to be a workaround for https://github.com/mono/mono/issues/18279
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 command.StandardInput.Dispose();
                 command.Task.Wait(TimeSpan.FromSeconds(1000)).ShouldEqual(true);

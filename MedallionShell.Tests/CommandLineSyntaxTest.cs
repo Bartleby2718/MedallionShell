@@ -14,7 +14,7 @@ namespace Medallion.Shell.Tests
         [Test]
         public void TestArgumentValidation([Values] bool isWindowsSyntax)
         {
-            var syntax = isWindowsSyntax ? new WindowsCommandLineSyntax() : new MonoUnixCommandLineSyntax().As<CommandLineSyntax>();
+            var syntax = new CrossPlatformCommandLineSyntax().As<CommandLineSyntax>();
             Assert.Throws<ArgumentNullException>(() => syntax.CreateArgumentString(null!));
             Assert.Throws<ArgumentException>(() => syntax.CreateArgumentString(["a", null!, "b"]));
         }
@@ -29,7 +29,7 @@ namespace Medallion.Shell.Tests
         [TestCase("\r", "\n", "\r\n")]
         [TestCase("", "\"", "\\", "")]
         [TestCase("abc", "a\\b", "a\\ b\"")]
-        // these chars are treated specially on mono unix
+        // these chars are treated specially on mono unix, so keeping.
         [TestCase("`,\\`", "`", "$ $", "$", "\\", "\\$\r\n")]
         // cases from https://docs.microsoft.com/en-us/cpp/cpp/parsing-cpp-command-line-arguments?view=vs-2019
         [TestCase("abc", "d", "e")]
@@ -49,7 +49,6 @@ namespace Medallion.Shell.Tests
         {
             this.TestRealRoundTrip(arguments);
             this.TestAgainstNetCoreArgumentParser(arguments);
-            this.TestAgainstMonoUnixArgumentParser(arguments);
         }
 
         private void TestRealRoundTrip(string[] arguments)
@@ -61,16 +60,9 @@ namespace Medallion.Shell.Tests
 
         private void TestAgainstNetCoreArgumentParser(string[] arguments)
         {
-            var argumentString = new WindowsCommandLineSyntax().CreateArgumentString(arguments);
+            var argumentString = new CrossPlatformCommandLineSyntax().CreateArgumentString(arguments);
             var result = new List<string>();
             ParseArgumentsIntoList(argumentString, result);
-            CollectionAssert.AreEqual(actual: result, expected: arguments);
-        }
-
-        private void TestAgainstMonoUnixArgumentParser(string[] arguments)
-        {
-            var argumentString = new MonoUnixCommandLineSyntax().CreateArgumentString(arguments);
-            var result = SplitCommandLine(argumentString);
             CollectionAssert.AreEqual(actual: result, expected: arguments);
         }
 
@@ -180,105 +172,6 @@ namespace Medallion.Shell.Tests
             }
 
             return currentArgument.ToString();
-        }
-        #endregion
-
-        #region ---- Mono Unix Arguments Parser ----
-        // based on https://github.com/mono/mono/blob/c114ff59d96baba4479361b2679b7de602517877/mono/eglib/gshell.c
-
-        public static List<string> SplitCommandLine(string commandLine)
-        {
-            var escaped = false;
-            var fresh = true;
-            var quoteChar = '\0';
-            var str = new StringBuilder();
-            var result = new List<string>();
-
-            for (var i = 0; i < commandLine.Length; ++i)
-            {
-                var c = commandLine[i];
-                if (escaped)
-                {
-                    /*
-                     * \CHAR is only special inside a double quote if CHAR is
-                     * one of: $`"\ and newline
-                     */
-                    if (quoteChar == '"')
-                    {
-                        if (!(c == '$' || c == '`' || c == '"' || c == '\\'))
-                        {
-                            str.Append('\\');
-                        }
-                        str.Append(c);
-                    }
-                    else
-                    {
-                        if (!char.IsWhiteSpace(c))
-                        {
-                            str.Append(c);
-                        }
-                    }
-                    escaped = false;
-                }
-                else if (quoteChar != '\0')
-                {
-                    if (c == quoteChar)
-                    {
-                        quoteChar = '\0';
-                        if (fresh && (i + 1 == commandLine.Length || char.IsWhiteSpace(commandLine[i + 1])))
-                        {
-                            result.Add(str.ToString());
-                            str.Clear();
-                        }
-                    }
-                    else if (c == '\\')
-                    {
-                        escaped = true;
-                    }
-                    else
-                    {
-                        str.Append(c);
-                    }
-                }
-                else if (char.IsWhiteSpace(c))
-                {
-                    if (str.Length > 0)
-                    {
-                        result.Add(str.ToString());
-                        str.Clear();
-                    }
-                }
-                else if (c == '\\')
-                {
-                    escaped = true;
-                }
-                else if (c == '\'' || c == '"')
-                {
-                    fresh = str.Length == 0;
-                    quoteChar = c;
-                }
-                else
-                {
-                    str.Append(c);
-                }
-            }
-
-            if (escaped)
-            {
-                throw new FormatException($"Unfinished escape: '{commandLine}'");
-            }
-
-            if (quoteChar != '\0')
-            {
-                throw new FormatException($"Unfinished quote: '{commandLine}'");
-            }
-
-            if (str.Length > 0)
-            {
-                result.Add(str.ToString());
-            }
-
-            return result;
         }
         #endregion
     }

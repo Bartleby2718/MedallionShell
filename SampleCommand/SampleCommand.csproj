@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- NOTE: must be net46, not net472 to run Mono tests -->
-    <TargetFrameworks>net6.0;net46</TargetFrameworks>
+	<!-- Should stay in sync with MedallionShell.Tests.csproj -->
+    <TargetFrameworks>net8.0;net6.0;net462</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
     <LangVersion>Latest</LangVersion>

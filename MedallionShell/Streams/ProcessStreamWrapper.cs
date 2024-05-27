@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Medallion.Shell.PlatformCompatibilityHelper;
@@ -13,8 +10,7 @@ namespace Medallion.Shell.Streams
     /// <summary>
     /// On .NET Core and .NET Framework on Windows, writing to the standard input <see cref="Stream"/> after the process exits is a noop.
     /// 
-    /// However, on Mono this will throw a "Write Fault" exception (https://github.com/madelson/MedallionShell/issues/6)
-    /// while .NET Core on Linux throws a "Broken Pipe" exception (https://github.com/madelson/MedallionShell/issues/46).
+    /// However, .NET Core on Linux throws a "Broken Pipe" exception (https://github.com/madelson/MedallionShell/issues/46).
     /// 
     /// This class wraps the underlying <see cref="Stream"/> to provide consistent behavior across platforms.
     /// </summary>
@@ -44,7 +40,7 @@ namespace Medallion.Shell.Streams
         public override int ReadTimeout { get => this.stream.ReadTimeout; set => this.stream.ReadTimeout = value; }
         public override int WriteTimeout { get => this.stream.WriteTimeout; set => this.stream.WriteTimeout = value; }
 
-        // Note: from my testing, try-catching on Flush() appears necessary with .NET core on Linux, but not on Mono
+        // Note: from my testing, try-catching on Flush() appears necessary with .NET core on Linux
         public override void Flush() =>
             this.DoWriteOperation(default(bool), static (s, _) => s.Flush());
         public override Task FlushAsync(CancellationToken cancellationToken) =>

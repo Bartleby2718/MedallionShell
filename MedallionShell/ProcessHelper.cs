@@ -91,7 +91,7 @@ namespace Medallion.Shell
                         // disposes out from under us
                         try
                         {
-                            var exitCode = process.SafeGetExitCode();
+                            var exitCode = process.ExitCode;
                             if (throwOnError && exitCode != 0)
                             {
                                 taskBuilder.SetException(new ErrorExitCodeException(process));

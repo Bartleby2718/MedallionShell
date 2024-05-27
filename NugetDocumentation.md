@@ -12,6 +12,6 @@ Here are some of the things the library takes care of for you:
 * Piping standard IO streams to and from various sources without creating deadlocks or race conditions
 * Properly escaping process arguments (a common source of security vulnerabilities)
 * Being able to recover from hangs through timeout, `CancellationToken`, and safe kill, and signal support
-* Cross-platform support (e. g. signals and workarounds for Mono oddities)
+* Cross-platform support
 
 **To learn more**, check out the [full documentation](https://github.com/madelson/MedallionShell/blob/master/README.md).

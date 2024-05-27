@@ -1,34 +1,37 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <!-- NOTE: must be net46, not net472 to run Mono tests -->
-    <TargetFrameworks>net6.0;net462</TargetFrameworks>
+    <!-- net462 is currently the oldest .NET Framework version supported per https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-framework -->
+    <!-- net6.0 and net8.0 are the only .NET Core versions supported per https://learn.microsoft.com/en-us/lifecycle/products/microsoft-net-and-net-core -->
+    <!-- Should stay in sync with SampleCommand.csproj -->
+    <TargetFrameworks>net8.0;net6.0;net462</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <LangVersion>Latest</LangVersion>
     <Nullable>enable</Nullable>
-	  <GenerateDocumentationFile>True</GenerateDocumentationFile>
-	  <CodeAnalysisRuleSet>..\stylecop.analyzers.ruleset</CodeAnalysisRuleSet>
-	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+      <GenerateDocumentationFile>True</GenerateDocumentationFile>
+      <CodeAnalysisRuleSet>..\stylecop.analyzers.ruleset</CodeAnalysisRuleSet>
+      <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>1591</NoWarn>
     <RootNamespace>Medallion.Shell.Tests</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="nunit" Version="3.13.3" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.4.0-beta.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-	  <PackageReference Include="Moq" Version="4.7.63" />
-	  <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="Moq" Version="4.7.63" />
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.435">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\MedallionShell\MedallionShell.csproj" />
-	  <ProjectReference Include="..\SampleCommand\SampleCommand.csproj" />
+      <ProjectReference Include="..\SampleCommand\SampleCommand.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+  <!--PR Comment: https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/blob/dev/src/Microsoft.IdentityModel.Protocols/Microsoft.IdentityModel.Protocols.csproj#L29-->
+  <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Management" />
     <Reference Include="System.ServiceModel" />

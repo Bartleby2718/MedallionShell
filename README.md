@@ -19,7 +19,7 @@ Here are some of the things the library takes care of for you:
 * Piping standard IO streams to and from various sources without creating deadlocks or race conditions
 * Properly escaping process arguments (a common source of security vulnerabilities)
 * Being able to recover from hangs through timeout, `CancellationToken`, and safe kill, and signal support
-* Cross-platform support (e. g. signals and workarounds for Mono oddities [#6](https://github.com/madelson/MedallionShell/issues/6), [#22](https://github.com/madelson/MedallionShell/issues/22), [#43](https://github.com/madelson/MedallionShell/issues/43), and [#44](https://github.com/madelson/MedallionShell/issues/44))
+* Cross-platform support
 
 ## API Overview
 
@@ -113,7 +113,7 @@ This package is published from the [strong-name](https://github.com/madelson/Med
 ## Contributing
 Contributions are welcome! Please report any issues you encounter or ideas for enhancements. If you would like to contribute code, I ask that you file an issue first so that we can work out the details before you start coding and avoid wasted effort on your part.
 
-**To build the code**, you will need VisualStudio 2019 or higher (community edition is fine) [download](https://www.visualstudio.com/vs/community/). Running all tests will require that you have installed Mono (for the Mono compat tests only).
+**To build the code**, you will need VisualStudio 2019 or higher (community edition is fine) [download](https://www.visualstudio.com/vs/community/).
 
 Windows: [![Build status](https://ci.appveyor.com/api/projects/status/9idbmymiatbd8ncx/branch/master?svg=true)](https://ci.appveyor.com/project/madelson/medallionshell/branch/master) 
 Linux: [![Build Status](https://travis-ci.com/madelson/MedallionShell.svg?branch=master)](https://travis-ci.com/madelson/MedallionShell)
