@@ -30,7 +30,6 @@
       <ProjectReference Include="..\SampleCommand\SampleCommand.csproj" />
   </ItemGroup>
 
-  <!--PR Comment: https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet/blob/dev/src/Microsoft.IdentityModel.Protocols/Microsoft.IdentityModel.Protocols.csproj#L29-->
   <ItemGroup Condition="'$(TargetFrameworkIdentifier)' == '.NETFramework'">
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Management" />
