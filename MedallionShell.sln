@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedallionShell", "MedallionShell\MedallionShell.csproj", "{15AF2EC0-F7B2-4206-B92A-DD1F3DC25F30}"
 EndProject
@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedallionShell.Tests", "Med
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SampleCommand", "SampleCommand\SampleCommand.csproj", "{1F78EB31-414F-4C1E-893B-C281F6B4FFC0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedallionShell.ProcessSignaler", "MedallionShell.ProcessSignaler\MedallionShell.ProcessSignaler.csproj", "{63CEF80E-6E45-4CB2-9830-10ADDF44757A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MedallionShell.ProcessSignaler", "MedallionShell.ProcessSignaler\MedallionShell.ProcessSignaler.csproj", "{63CEF80E-6E45-4CB2-9830-10ADDF44757A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F0605C3-2439-444D-9033-40A95CC95922}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
