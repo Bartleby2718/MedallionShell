@@ -589,6 +589,46 @@ namespace Medallion.Shell.Tests
             command.Result.Success.ShouldEqual(true);
         }
 
+        [Platform("Win", Reason = "Tests Windows-specific paths")]
+        [TestCase(@".\dotnet.exe", @"C:\Program Files\dotnet")]
+        [TestCase(@".\dotnet.exe", @"C:\Program Files\dotnet\")]
+        [TestCase("dotnet.exe", @"C:\Program Files\dotnet")]
+        [TestCase("dotnet.exe", @"C:\Program Files\dotnet\")]
+        [TestCase(@"dotnet\dotnet.exe", @"C:\Program Files")]
+        [TestCase(@"Program Files\dotnet\dotnet.exe", @"C:\")]
+        public void TestRelativePathsOnWindows(string relativeExecutablePath, string workingDirectory) =>
+            TestRelativePaths(relativeExecutablePath, workingDirectory);
+
+#if !NETFRAMEWORK
+        [Platform("Unix", Reason = "Tests Unix-specific paths")]
+        [TestCase("./dotnet", "/usr/bin")]
+        [TestCase("./dotnet", "/usr/bin/")]
+        [TestCase("dotnet", "/usr/bin")]
+        [TestCase("dotnet", "/usr/bin/")]
+        [TestCase("bin/dotnet", "/usr")]
+        [TestCase("usr/bin/dotnet", "/")]
+        public void TestRelativePathsOnUnix(string relativeExecutablePath, string workingDirectory) =>
+            TestRelativePaths(relativeExecutablePath, workingDirectory);
+#endif
+
+        private static void TestRelativePaths(string relativeExecutablePath, string workingDirectory)
+        {
+            var expectedVersion = TestShell.Run(DotNetPath, ["--version"])
+                .StandardOutput
+                .ReadToEnd();
+
+            Assert.That(expectedVersion, Does.Match(@"\d.\d.\d"));
+
+            Assert.That(
+                TestShell.Run(
+                    relativeExecutablePath,
+                    ["--version"],
+                    o => o.WorkingDirectory(workingDirectory))
+                    .StandardOutput
+                    .ReadToEnd(),
+                Is.EqualTo(expectedVersion));
+        }
+        
         [Test]
         [Obsolete("Tests obsolete code")]
         public async Task TestCustomCommandLineSyntaxIsUsed()

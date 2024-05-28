@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -38,10 +39,27 @@ namespace Medallion.Shell
 
             var finalOptions = this.GetOptions(options);
 
+            var fullyQualifiedExecutablePath =
+#if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1
+                Path.IsPathFullyQualified(executable)
+#else
+                IsPathFullyQualified(executable)
+#endif
+                ? executable
+                // Normalize the path using Path.GetFullPath
+                : Path.GetFullPath(Path.Combine(
+                    finalOptions.WorkingDirectoryPath
+#if NETSTANDARD1_3
+                        ?? Directory.GetCurrentDirectory(),
+#else
+                        ?? Environment.CurrentDirectory,
+#endif
+                    executable));
+
             var processStartInfo = new ProcessStartInfo
             {
                 CreateNoWindow = true,
-                FileName = executable,
+                FileName = fullyQualifiedExecutablePath,
                 RedirectStandardError = true,
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
@@ -204,6 +222,7 @@ namespace Medallion.Shell
             internal TimeSpan ProcessTimeout { get; private set; }
             internal Encoding? ProcessStreamEncoding { get; private set; }
             internal CancellationToken ProcessCancellationToken { get; private set; }
+            internal string? WorkingDirectoryPath { get; private set; }
 
 #region ---- Builder methods ----
             /// <summary>
@@ -267,6 +286,7 @@ namespace Medallion.Shell
             /// </summary>.
             public Options WorkingDirectory(string path)
             {
+                this.WorkingDirectoryPath = path;
                 return this.StartInfo(psi => psi.WorkingDirectory = path);
             }
 
@@ -378,5 +398,14 @@ namespace Medallion.Shell
             return exception is ArgumentException // process has already exited or ID is invalid
                 || exception is InvalidOperationException; // process exited after its creation but before taking its handle
         }
+
+#if !NETCOREAPP2_1_OR_GREATER && !NETSTANDARD2_1
+        // Path.IsPathFullyQualified is defined only on .NET Core 2.1+, so use the code from https://stackoverflow.com/a/49883481
+        private static bool IsPathFullyQualified(string path)
+        {
+            var root = Path.GetPathRoot(path);
+            return root.StartsWith(@"\\") || (root.EndsWith(@"\") && root != @"\");
+        }
+#endif
     }
 }
