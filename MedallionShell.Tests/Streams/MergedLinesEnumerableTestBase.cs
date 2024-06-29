@@ -97,24 +97,24 @@ public abstract class MergedLinesEnumerableTestBase
         TestOneThrows(reverse: true);
     }
 
-    [Test, Timeout(10000)] // something's wrong if it's taking more than 10 seconds
-    public void FuzzTest()
+    [Test, Timeout(5_000)] // something's wrong if it's taking more than 5 seconds
+    public async Task FuzzTest()
     {
-        var pipe1 = new Pipe();
-        var pipe2 = new Pipe();
+        Pipe pipe1 = new(), pipe2 = new();
 
         var asyncEnumerable = this.Create(new StreamReader(pipe1.OutputStream), new StreamReader(pipe2.OutputStream));
 
         var strings1 = Enumerable.Range(0, 2000).Select(_ => Guid.NewGuid().ToString()).ToArray();
         var strings2 = Enumerable.Range(0, 2300).Select(_ => Guid.NewGuid().ToString()).ToArray();
 
-        static void WriteStrings(IReadOnlyList<string> strings, TextWriter writer)
+        static void WriteStrings(IReadOnlyList<string> strings, Pipe pipe)
         {
-            var spinWait = default(SpinWait);
-            var random = new Random(Guid.NewGuid().GetHashCode());
+            SpinWait spinWait = default;
+            Random random = new(Guid.NewGuid().GetHashCode());
+            using StreamWriter writer = new(pipe.InputStream);
             foreach (var line in strings)
             {
-                if (random.Next(110) == 1)
+                if (random.Next(10) == 1)
                 {
                     spinWait.SpinOnce();
                 }
@@ -122,21 +122,12 @@ public abstract class MergedLinesEnumerableTestBase
                 writer.WriteLine(line);
             }
         }
-        
-        var task1 = Task.Run(() =>
-        {
-            using StreamWriter writer1 = new(pipe1.InputStream);
-            WriteStrings(strings1, writer1);
-        });
-        var task2 = Task.Run(() =>
-        {
-            using StreamWriter writer2 = new(pipe2.InputStream);
-            WriteStrings(strings2, writer2);
-        });
-        var consumeTask = asyncEnumerable.ToListAsync();
-        Task.WaitAll(task1, task2, consumeTask);
 
-        CollectionAssert.AreEquivalent(strings1.Concat(strings2).ToList(), consumeTask.Result);
+        var task1 = Task.Run(() => WriteStrings(strings1, pipe1));
+        var task2 = Task.Run(() => WriteStrings(strings2, pipe2));
+        Task.WaitAll(task1, task2); // need to dispose the writer to end the stream
+
+        CollectionAssert.AreEquivalent(strings1.Concat(strings2), await asyncEnumerable.ToListAsync());
     }
 }
 
