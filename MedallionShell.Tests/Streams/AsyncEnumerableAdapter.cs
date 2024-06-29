@@ -31,7 +31,7 @@ public class AsyncEnumerableAdapter : IAsyncEnumerable<string>
         public ValueTask DisposeAsync()
         {
             this.enumerator.Dispose();
-            return new(Task.CompletedTask);
+            return default;
         }
 
         public ValueTask<bool> MoveNextAsync() => new(this.enumerator.MoveNext());
