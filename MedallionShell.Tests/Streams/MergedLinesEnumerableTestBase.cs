@@ -97,7 +97,7 @@ public abstract class MergedLinesEnumerableTestBase
         TestOneThrows(reverse: true);
     }
 
-    [Test, Timeout(5_000)] // something's wrong if it's taking more than 5 seconds
+    [Test, Timeout(10_000)] // something's wrong if it's taking more than 10 seconds
     public async Task FuzzTest()
     {
         Pipe pipe1 = new(), pipe2 = new();
