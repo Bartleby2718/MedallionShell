@@ -22,14 +22,14 @@ public abstract class MergedLinesEnumerableTestBase
 
         var enumerable1 = this.Create(empty1, nonEmpty1);
         var list1 = await enumerable1.ToListAsync();
-        list1.SequenceEqual(new[] { "abc", "def", "ghi", "jkl" })
+        list1.SequenceEqual(["abc", "def", "ghi", "jkl"])
             .ShouldEqual(true, string.Join(", ", list1));
 
         var empty2 = new StringReader(string.Empty);
         var nonEmpty2 = new StringReader("a\nbb\nccc\n");
         var enumerable2 = this.Create(nonEmpty2, empty2);
         var list2 = await enumerable2.ToListAsync();
-        list2.SequenceEqual(new[] { "a", "bb", "ccc" })
+        list2.SequenceEqual(["a", "bb", "ccc"])
             .ShouldEqual(true, string.Join(", ", list2));
     }
 
@@ -54,8 +54,8 @@ public abstract class MergedLinesEnumerableTestBase
     [Test]
     public async Task TestBothArePopulatedDifferenceSizes()
     {
-        var lines1 = string.Join("\n", new[] { "x", "y", "z" });
-        var lines2 = string.Join("\n", new[] { "1", "2", "3", "4", "5" });
+        var lines1 = string.Join("\n", ["x", "y", "z"]);
+        var lines2 = string.Join("\n", ["1", "2", "3", "4", "5"]);
 
         var list1 = await this.Create(new StringReader(lines1), new StringReader(lines2))
             .ToListAsync();
