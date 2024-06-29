@@ -14,7 +14,7 @@ namespace Medallion.Shell.Tests
         [Test]
         public void TestArgumentValidation([Values] bool isWindowsSyntax)
         {
-            var syntax = new CrossPlatformCommandLineSyntax().As<CommandLineSyntax>();
+            var syntax = new WindowsCommandLineSyntax().As<CommandLineSyntax>();
             Assert.Throws<ArgumentNullException>(() => syntax.CreateArgumentString(null!));
             Assert.Throws<ArgumentException>(() => syntax.CreateArgumentString(["a", null!, "b"]));
         }
@@ -60,7 +60,7 @@ namespace Medallion.Shell.Tests
 
         private void TestAgainstNetCoreArgumentParser(string[] arguments)
         {
-            var argumentString = new CrossPlatformCommandLineSyntax().CreateArgumentString(arguments);
+            var argumentString = new WindowsCommandLineSyntax().CreateArgumentString(arguments);
             var result = new List<string>();
             ParseArgumentsIntoList(argumentString, result);
             CollectionAssert.AreEqual(actual: result, expected: arguments);

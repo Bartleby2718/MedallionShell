@@ -17,7 +17,7 @@ namespace Medallion.Shell
 
         public static bool ProcessStreamWriteThrowsOnProcessEnd => !IsWindows;
 
-        public static readonly CommandLineSyntax DefaultCommandLineSyntax = new CrossPlatformCommandLineSyntax();
+        public static readonly CommandLineSyntax DefaultCommandLineSyntax = new WindowsCommandLineSyntax();
 
         /// <summary>
         /// Starts the given <paramref name="process"/> and captures the standard IO streams.

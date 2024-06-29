@@ -6,16 +6,16 @@ using System.Text;
 namespace Medallion.Shell
 {
     /// <summary>
-    /// Provides cross-platform <see cref="CommandLineSyntax"/> functionality.
+    /// Provides <see cref="CommandLineSyntax"/> functionality for windows.
     /// 
     /// Note that while this class uses windows parsing rules, .NET Core actually follows the same rules when parsing
     /// <see cref="ProcessStartInfo.Arguments"/> into argv for unix-like systems.
     /// This does not work for Mono running on Unix, which uses a different escaping scheme.
     /// </summary>
-    public sealed class CrossPlatformCommandLineSyntax : CommandLineSyntax
+    public sealed class WindowsCommandLineSyntax : CommandLineSyntax
     {
         /// <summary>
-        /// Provides cross-platform <see cref="CommandLineSyntax"/> functionality
+        /// Provides <see cref="CommandLineSyntax"/> functionality for windows
         /// </summary>
         public override string CreateArgumentString(IEnumerable<string> arguments) => CreateArgumentString(arguments, AppendArgument);
 

@@ -78,8 +78,8 @@ Medallion.Shell.Streams.ProcessStreamWriter.PipeFromAsync(System.Collections.Gen
 Medallion.Shell.Streams.ProcessStreamWriter.PipeFromAsync(System.IO.FileInfo! file, bool leaveWriterOpen = false) -> System.Threading.Tasks.Task!
 Medallion.Shell.Streams.ProcessStreamWriter.PipeFromAsync(System.IO.Stream! stream, bool leaveWriterOpen = false, bool leaveStreamOpen = false) -> System.Threading.Tasks.Task!
 Medallion.Shell.Streams.ProcessStreamWriter.PipeFromAsync(System.IO.TextReader! reader, bool leaveWriterOpen = false, bool leaveReaderOpen = false) -> System.Threading.Tasks.Task!
-Medallion.Shell.CrossPlatformCommandLineSyntax
-Medallion.Shell.CrossPlatformCommandLineSyntax.CrossPlatformCommandLineSyntax() -> void
+Medallion.Shell.WindowsCommandLineSyntax
+Medallion.Shell.WindowsCommandLineSyntax.WindowsCommandLineSyntax() -> void
 override Medallion.Shell.Streams.ProcessStreamWriter.Encoding.get -> System.Text.Encoding!
 override Medallion.Shell.Streams.ProcessStreamWriter.Flush() -> void
 override Medallion.Shell.Streams.ProcessStreamWriter.FlushAsync() -> System.Threading.Tasks.Task!
@@ -128,7 +128,7 @@ override Medallion.Shell.Streams.ProcessStreamWriter.WriteLineAsync() -> System.
 override Medallion.Shell.Streams.ProcessStreamWriter.WriteLineAsync(char value) -> System.Threading.Tasks.Task!
 override Medallion.Shell.Streams.ProcessStreamWriter.WriteLineAsync(char[]! buffer, int index, int count) -> System.Threading.Tasks.Task!
 override Medallion.Shell.Streams.ProcessStreamWriter.WriteLineAsync(string? value) -> System.Threading.Tasks.Task!
-override Medallion.Shell.CrossPlatformCommandLineSyntax.CreateArgumentString(System.Collections.Generic.IEnumerable<string!>! arguments) -> string!
+override Medallion.Shell.WindowsCommandLineSyntax.CreateArgumentString(System.Collections.Generic.IEnumerable<string!>! arguments) -> string!
 static Medallion.Shell.Command.operator <(Medallion.Shell.Command! command, System.Collections.Generic.IEnumerable<char>! chars) -> Medallion.Shell.Command!
 static Medallion.Shell.Command.operator <(Medallion.Shell.Command! command, System.Collections.Generic.IEnumerable<string!>! lines) -> Medallion.Shell.Command!
 static Medallion.Shell.Command.operator <(Medallion.Shell.Command! command, System.IO.FileInfo! file) -> Medallion.Shell.Command!
