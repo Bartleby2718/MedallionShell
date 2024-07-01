@@ -107,8 +107,10 @@ public abstract class MergedLinesEnumerableTestBase
         var strings1 = Enumerable.Range(0, 2000).Select(_ => Guid.NewGuid().ToString()).ToArray();
         var strings2 = Enumerable.Range(0, 2300).Select(_ => Guid.NewGuid().ToString()).ToArray();
 
-        static void WriteStrings(IReadOnlyList<string> strings, Pipe pipe)
+        static async Task WriteStringsAsync(IReadOnlyList<string> strings, Pipe pipe)
         {
+            await Task.CompletedTask; // to make compiler happy
+
             SpinWait spinWait = default;
             Random random = new(Guid.NewGuid().GetHashCode());
             using StreamWriter writer = new(pipe.InputStream);
@@ -123,11 +125,12 @@ public abstract class MergedLinesEnumerableTestBase
             }
         }
 
-        var task1 = Task.Run(() => WriteStrings(strings1, pipe1));
-        var task2 = Task.Run(() => WriteStrings(strings2, pipe2));
-        Task.WaitAll(task1, task2); // need to dispose the writer to end the stream
+        var task1 = WriteStringsAsync(strings1, pipe1);
+        var task2 = WriteStringsAsync(strings2, pipe2);
+        var consumeTask = asyncEnumerable.ToListAsync();
+        await Task.WhenAll(task1, task2, consumeTask); // need to dispose the writer to end the stream
 
-        CollectionAssert.AreEquivalent(strings1.Concat(strings2), await asyncEnumerable.ToListAsync());
+        CollectionAssert.AreEquivalent(strings1.Concat(strings2), consumeTask.Result);
     }
 }
 
